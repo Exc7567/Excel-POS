@@ -1,5 +1,4 @@
 import type { CartItem } from '../types';
-import { formatCurrency } from './formatCurrency';
 
 // ESC/POS Commands
 const ESC = 0x1b;
