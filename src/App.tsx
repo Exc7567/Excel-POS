@@ -1,13 +1,13 @@
-import { useState, useCallback, useRef } from 'react';
-import { Header } from './components/Header';
-import { ItemGrid } from './components/ItemGrid';
-import { Cart } from './components/Cart';
-import { useCart } from './hooks/useCart';
-import { generateReceiptText } from './utils/escpos';
-import itemsData from './data/items.json';
-import type { Item, PriceType } from './types';
+import { useState, useCallback, useRef } from "react";
+import { Header } from "./components/Header";
+import { ItemGrid } from "./components/ItemGrid";
+import { Cart } from "./components/Cart";
+import { useCart } from "./hooks/useCart";
+import { generateReceiptText } from "./utils/escpos";
+import itemsData from "./data/items.json";
+import type { Item, PriceType } from "./types";
 
-const STORE_NAME = 'Sembako Makmur Jaya';
+const STORE_NAME = "Sembako Makmur Jaya";
 const items: Item[] = itemsData.items;
 
 const MIN_SIDEBAR_WIDTH = 320;
@@ -15,7 +15,7 @@ const MAX_SIDEBAR_WIDTH = 600;
 const DEFAULT_SIDEBAR_WIDTH = 384;
 
 function App() {
-  const [priceType, setPriceType] = useState<PriceType>('grosir');
+  const [priceType, setPriceType] = useState<PriceType>("grosir");
   const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_WIDTH);
   const [isResizing, setIsResizing] = useState(false);
   const cart = useCart();
@@ -30,16 +30,19 @@ function App() {
     setIsResizing(true);
   }, []);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isResizing || !containerRef.current) return;
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!isResizing || !containerRef.current) return;
 
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const newWidth = containerRect.right - e.clientX;
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const newWidth = containerRect.right - e.clientX;
 
-    if (newWidth >= MIN_SIDEBAR_WIDTH && newWidth <= MAX_SIDEBAR_WIDTH) {
-      setSidebarWidth(newWidth);
-    }
-  }, [isResizing]);
+      if (newWidth >= MIN_SIDEBAR_WIDTH && newWidth <= MAX_SIDEBAR_WIDTH) {
+        setSidebarWidth(newWidth);
+      }
+    },
+    [isResizing],
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);
@@ -56,7 +59,7 @@ function App() {
     console.log(text);
 
     // Create a printable window
-    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    const printWindow = window.open("", "_blank", "width=400,height=600");
     if (printWindow) {
       printWindow.document.write(`
         <html>
@@ -93,7 +96,10 @@ function App() {
     >
       <Header priceType={priceType} onPriceTypeChange={setPriceType} />
 
-      <div ref={containerRef} className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <div
+        ref={containerRef}
+        className="flex-1 flex flex-col lg:flex-row overflow-hidden"
+      >
         <ItemGrid
           items={items}
           priceType={priceType}
@@ -104,7 +110,7 @@ function App() {
         <div
           onMouseDown={handleMouseDown}
           className={`hidden lg:block w-1 bg-gray-200 hover:bg-gray-400 cursor-col-resize transition-colors flex-shrink-0 ${
-            isResizing ? 'bg-gray-400' : ''
+            isResizing ? "bg-gray-400" : ""
           }`}
         />
 

@@ -1,5 +1,5 @@
-import type { Item, PriceType } from '../types';
-import { ItemCard } from './ItemCard';
+import type { Item, PriceType } from "../types";
+import { ItemCard } from "./ItemCard";
 
 interface ItemGridProps {
   items: Item[];
