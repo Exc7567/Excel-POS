@@ -1,0 +1,874 @@
+{
+  "items": [
+    {
+      "id": "1",
+      "name": "MIE NYONYA",
+      "category": "MIE",
+      "prices": {
+        "net": 0,
+        "grosir": 24000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "2",
+      "name": "MIE PALEM KRITING",
+      "category": "MIE",
+      "prices": {
+        "net": 0,
+        "grosir": 43000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "3",
+      "name": "MIE BAKSO",
+      "category": "MIE",
+      "prices": {
+        "net": 0,
+        "grosir": 34500,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "4",
+      "name": "MIE DARA BSR",
+      "category": "MIE",
+      "prices": {
+        "net": 0,
+        "grosir": 35500,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "5",
+      "name": "SEDAAP MIE GR 91GR (40)",
+      "category": "MIE",
+      "prices": {
+        "net": 109000,
+        "grosir": 3000,
+        "eceran": 3500
+      }
+    },
+    {
+      "id": "6",
+      "name": "SEDAAP MIE KARI SPESIAL 75GR (40)",
+      "category": "MIE",
+      "prices": {
+        "net": 105500,
+        "grosir": 2900,
+        "eceran": 3250
+      }
+    },
+    {
+      "id": "7",
+      "name": "SEDAAP MIE KOREAN SPICY 87GR (40)",
+      "category": "MIE",
+      "prices": {
+        "net": 109150,
+        "grosir": 3000,
+        "eceran": 3500
+      }
+    },
+    {
+      "id": "8",
+      "name": "SEDAAP MIE GR ALA CHEF BAG 83GR (40)",
+      "category": "MIE",
+      "prices": {
+        "net": 109150,
+        "grosir": 3000,
+        "eceran": 3500
+      }
+    },
+    {
+      "id": "9",
+      "name": "MIE BAKSO SUPER",
+      "category": "MIE",
+      "prices": {
+        "net": 34500,
+        "grosir": 35500,
+        "eceran": 36000
+      }
+    },
+    {
+      "id": "10",
+      "name": "MIE INSTAN INTERMI (40)",
+      "category": "MIE",
+      "prices": {
+        "net": 51000,
+        "grosir": 52500,
+        "eceran": 1500
+      }
+    },
+    {
+      "id": "11",
+      "name": "MIE KUDA MENJANGAN",
+      "category": "MIE",
+      "prices": {
+        "net": 0,
+        "grosir": 41000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "12",
+      "name": "RIMBA",
+      "category": "KECAP SAOS",
+      "prices": {
+        "net": 9420,
+        "grosir": 9750,
+        "eceran": 10000
+      }
+    },
+    {
+      "id": "13",
+      "name": "TAWON",
+      "category": "KECAP SAOS",
+      "prices": {
+        "net": 0,
+        "grosir": 15000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "14",
+      "name": "DORANG II",
+      "category": "KECAP SAOS",
+      "prices": {
+        "net": 0,
+        "grosir": 18000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "15",
+      "name": "BANGAU BOTOL",
+      "category": "KECAP SAOS",
+      "prices": {
+        "net": 0,
+        "grosir": 10000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "16",
+      "name": "KECAP MANIS SEDAAP POUCH 77 GR (48)",
+      "category": "KECAP SAOS",
+      "prices": {
+        "net": 58700,
+        "grosir": 1350,
+        "eceran": 1500
+      }
+    },
+    {
+      "id": "17",
+      "name": "TAWON BOTOL PLASTIK",
+      "category": "KECAP SAOS",
+      "prices": {
+        "net": 0,
+        "grosir": 16500,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "18",
+      "name": "BENDERA SASET",
+      "category": "SUSU",
+      "prices": {
+        "net": 0,
+        "grosir": 8000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "19",
+      "name": "BENDERA KALENG",
+      "category": "SUSU",
+      "prices": {
+        "net": 0,
+        "grosir": 12000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "20",
+      "name": "INDOMILK STERIL BOTOL (24) CH/STR",
+      "category": "SUSU",
+      "prices": {
+        "net": 81144,
+        "grosir": 82500,
+        "eceran": 3500
+      }
+    },
+    {
+      "id": "21",
+      "name": "INDOMILK KALENG PUTIH",
+      "category": "SUSU",
+      "prices": {
+        "net": 0,
+        "grosir": 12000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "22",
+      "name": "OMELA KECIL",
+      "category": "SUSU",
+      "prices": {
+        "net": 0,
+        "grosir": 10000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "23",
+      "name": "OMELA BESAR",
+      "category": "SUSU",
+      "prices": {
+        "net": 0,
+        "grosir": 12500,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "24",
+      "name": "DANCOW",
+      "category": "SUSU",
+      "prices": {
+        "net": 0,
+        "grosir": 35500,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "25",
+      "name": "MILO",
+      "category": "SUSU",
+      "prices": {
+        "net": 0,
+        "grosir": 18500,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "26",
+      "name": "CARNETION",
+      "category": "SUSU",
+      "prices": {
+        "net": 14000,
+        "grosir": 14500,
+        "eceran": 14500
+      }
+    },
+    {
+      "id": "27",
+      "name": "ENERGEN",
+      "category": "SUSU",
+      "prices": {
+        "net": 0,
+        "grosir": 19000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "28",
+      "name": "GIV",
+      "category": "SABUN",
+      "prices": {
+        "net": 0,
+        "grosir": 2700,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "29",
+      "name": "GENTLE",
+      "category": "SABUN",
+      "prices": {
+        "net": 0,
+        "grosir": 10000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "30",
+      "name": "RINSO 1000 (12)",
+      "category": "SABUN",
+      "prices": {
+        "net": 90000,
+        "grosir": 10000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "31",
+      "name": "RINSO 5000",
+      "category": "SABUN",
+      "prices": {
+        "net": 0,
+        "grosir": 4500,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "32",
+      "name": "SITRUN",
+      "category": "SABUN",
+      "prices": {
+        "net": 0,
+        "grosir": 40000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "33",
+      "name": "DAIA 1000",
+      "category": "SABUN",
+      "prices": {
+        "net": 0,
+        "grosir": 10000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "34",
+      "name": "POWDET BOOM CINTA ROSE BAG 225GR (36)",
+      "category": "SABUN",
+      "prices": {
+        "net": 99300,
+        "grosir": 100000,
+        "eceran": 3500
+      }
+    },
+    {
+      "id": "35",
+      "name": "SABUN JAZ1 1 KG (12)",
+      "category": "SABUN",
+      "prices": {
+        "net": 181100,
+        "grosir": 15500,
+        "eceran": 16000
+      }
+    },
+    {
+      "id": "36",
+      "name": "SABUN JAZ1 RENTENG (24)",
+      "category": "SABUN",
+      "prices": {
+        "net": 110000,
+        "grosir": 115000,
+        "eceran": 120000
+      }
+    },
+    {
+      "id": "37",
+      "name": "GULA RA",
+      "category": "GULA TEPUNG",
+      "prices": {
+        "net": 0,
+        "grosir": 15300,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "38",
+      "name": "KODOK",
+      "category": "GULA TEPUNG",
+      "prices": {
+        "net": 195000,
+        "grosir": 205000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "39",
+      "name": "PAYUNG",
+      "category": "GULA TEPUNG",
+      "prices": {
+        "net": 0,
+        "grosir": 168000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "40",
+      "name": "CAKRA",
+      "category": "GULA TEPUNG",
+      "prices": {
+        "net": 0,
+        "grosir": 215000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "41",
+      "name": "SEGITIGA BIRU",
+      "category": "GULA TEPUNG",
+      "prices": {
+        "net": 0,
+        "grosir": 211000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "42",
+      "name": "GULA LOS",
+      "category": "GULA TEPUNG",
+      "prices": {
+        "net": 0,
+        "grosir": 15700,
+        "eceran": 15700
+      }
+    },
+    {
+      "id": "43",
+      "name": "LENCANA MERAH",
+      "category": "GULA TEPUNG",
+      "prices": {
+        "net": 0,
+        "grosir": 171000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "44",
+      "name": "TRIGU",
+      "category": "GULA TEPUNG",
+      "prices": {
+        "net": 0,
+        "grosir": 0,
+        "eceran": 7000
+      }
+    },
+    {
+      "id": "45",
+      "name": "MIWON 1000",
+      "category": "BUMBU",
+      "prices": {
+        "net": 0,
+        "grosir": 21000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "46",
+      "name": "MIWON 1/2 ONS",
+      "category": "BUMBU",
+      "prices": {
+        "net": 0,
+        "grosir": 54000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "47",
+      "name": "MIWON 1/4 ONS",
+      "category": "BUMBU",
+      "prices": {
+        "net": 0,
+        "grosir": 110000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "48",
+      "name": "LADAKU",
+      "category": "BUMBU",
+      "prices": {
+        "net": 0,
+        "grosir": 10000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "49",
+      "name": "ROYCO 220 AYAM",
+      "category": "BUMBU",
+      "prices": {
+        "net": 197000,
+        "grosir": 0,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "50",
+      "name": "ROYCO",
+      "category": "BUMBU",
+      "prices": {
+        "net": 0,
+        "grosir": 4750,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "51",
+      "name": "MASAKO",
+      "category": "BUMBU",
+      "prices": {
+        "net": 0,
+        "grosir": 4750,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "52",
+      "name": "GROSOK",
+      "category": "GARAM",
+      "prices": {
+        "net": 26350,
+        "grosir": 27500,
+        "eceran": 29000
+      }
+    },
+    {
+      "id": "53",
+      "name": "CERDIK HALUS",
+      "category": "GARAM",
+      "prices": {
+        "net": 28500,
+        "grosir": 31500,
+        "eceran": 32500
+      }
+    },
+    {
+      "id": "54",
+      "name": "MINYAK KITA",
+      "category": "MINYAK",
+      "prices": {
+        "net": 0,
+        "grosir": 210000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "55",
+      "name": "SANCO 1 LT (12)",
+      "category": "MINYAK",
+      "prices": {
+        "net": 239000,
+        "grosir": 21000,
+        "eceran": 21000
+      }
+    },
+    {
+      "id": "56",
+      "name": "MINYAK BM",
+      "category": "MINYAK",
+      "prices": {
+        "net": 0,
+        "grosir": 18500,
+        "eceran": 19500
+      }
+    },
+    {
+      "id": "57",
+      "name": "TOP PLUS CARTON (12 RTG)",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 85000,
+        "grosir": 95000,
+        "eceran": 9000
+      }
+    },
+    {
+      "id": "58",
+      "name": "KAPAL API RENTENG",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 0,
+        "grosir": 0,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "59",
+      "name": "KAPAL API MINI",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 0,
+        "grosir": 0,
+        "eceran": 9500
+      }
+    },
+    {
+      "id": "60",
+      "name": "TEH NAGA",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 0,
+        "grosir": 19000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "61",
+      "name": "TEH 999",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 0,
+        "grosir": 0,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "62",
+      "name": "ANGET SARI SUSU JAHE 250 (5X10) 28GR",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 270500,
+        "grosir": 14000,
+        "eceran": 15000
+      }
+    },
+    {
+      "id": "63",
+      "name": "NUTRIJELL EKO CINGCAU (12X12)",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 1670,
+        "grosir": 20000,
+        "eceran": 2200
+      }
+    },
+    {
+      "id": "64",
+      "name": "NUTRIJELL EKO ANGGUR (12X12)",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 1670,
+        "grosir": 20000,
+        "eceran": 2200
+      }
+    },
+    {
+      "id": "65",
+      "name": "NUTRIJELL EKO KELAPA MUDA (12X12)",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 1670,
+        "grosir": 20000,
+        "eceran": 2200
+      }
+    },
+    {
+      "id": "66",
+      "name": "NUTRIJELL EKO LECI",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 1670,
+        "grosir": 20000,
+        "eceran": 2200
+      }
+    },
+    {
+      "id": "67",
+      "name": "NUTRIJELL EKO PLAIN",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 1670,
+        "grosir": 20000,
+        "eceran": 2200
+      }
+    },
+    {
+      "id": "68",
+      "name": "NUTRIJELL EKO COKLAT (12X12)",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 2431,
+        "grosir": 29200,
+        "eceran": 30000
+      }
+    },
+    {
+      "id": "69",
+      "name": "TEH GOPEK",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 0,
+        "grosir": 0,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "70",
+      "name": "KAPAL API",
+      "category": "KOPI TEH",
+      "prices": {
+        "net": 0,
+        "grosir": 0,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "71",
+      "name": "TOLAK ANGIN",
+      "category": "OBAT",
+      "prices": {
+        "net": 0,
+        "grosir": 46000,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "72",
+      "name": "DECOLGEN",
+      "category": "OBAT",
+      "prices": {
+        "net": 0,
+        "grosir": 0,
+        "eceran": 3000
+      }
+    },
+    {
+      "id": "73",
+      "name": "BISKUIT ROMA",
+      "category": "SNACK",
+      "prices": {
+        "net": 8125,
+        "grosir": 8750,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "74",
+      "name": "ROMA SANDWICH",
+      "category": "SNACK",
+      "prices": {
+        "net": 0,
+        "grosir": 0,
+        "eceran": 0
+      }
+    },
+    {
+      "id": "75",
+      "name": "CRISPY CRACK 225",
+      "category": "SNACK",
+      "prices": {
+        "net": 9450,
+        "grosir": 9750,
+        "eceran": 10000
+      }
+    },
+    {
+      "id": "76",
+      "name": "COCOLATOS MACHA DRINK (8)",
+      "category": "SNACK",
+      "prices": {
+        "net": 155000,
+        "grosir": 20500,
+        "eceran": 21000
+      }
+    },
+    {
+      "id": "77",
+      "name": "COCOLATOS COKLAT DRINK (8)",
+      "category": "SNACK",
+      "prices": {
+        "net": 155000,
+        "grosir": 20500,
+        "eceran": 21000
+      }
+    },
+    {
+      "id": "78",
+      "name": "POWDET BOOM CINTA ROSE BAG 225GR",
+      "category": "SABUN",
+      "prices": {
+        "net": 99300,
+        "grosir": 100000,
+        "eceran": 3500
+      }
+    },
+    {
+      "id": "79",
+      "name": "JOLLY FACIAL SOFT PACK (4)",
+      "category": "TISSUE",
+      "prices": {
+        "net": 328000,
+        "grosir": 84000,
+        "eceran": 85000
+      }
+    },
+    {
+      "id": "80",
+      "name": "PASEO SMART FACIAL SOFT 48X540",
+      "category": "TISSUE",
+      "prices": {
+        "net": 423601,
+        "grosir": 9000,
+        "eceran": 9500
+      }
+    },
+    {
+      "id": "81",
+      "name": "CHARM EXTRA MAXI NON WING 8M (24)",
+      "category": "PEMBALUT",
+      "prices": {
+        "net": 262429,
+        "grosir": 12000,
+        "eceran": 13000
+      }
+    },
+    {
+      "id": "82",
+      "name": "CHARM EXTRA MAXI WING 70 (24)",
+      "category": "PEMBALUT",
+      "prices": {
+        "net": 329474,
+        "grosir": 14500,
+        "eceran": 15000
+      }
+    },
+    {
+      "id": "83",
+      "name": "CHARM EXTRA MAXI WING 100 (24)",
+      "category": "PEMBALUT",
+      "prices": {
+        "net": 59164,
+        "grosir": 19500,
+        "eceran": 20000
+      }
+    },
+    {
+      "id": "84",
+      "name": "CHARM EXTRA KERING L",
+      "category": "PEMBALUT",
+      "prices": {
+        "net": 1550,
+        "grosir": 1750,
+        "eceran": 2000
+      }
+    },
+    {
+      "id": "85",
+      "name": "CHARM EXTRA KERING XL",
+      "category": "PEMBALUT",
+      "prices": {
+        "net": 1900,
+        "grosir": 2250,
+        "eceran": 2500
+      }
+    },
+    {
+      "id": "86",
+      "name": "CHARM EXTRA KERING XXL",
+      "category": "PEMBALUT",
+      "prices": {
+        "net": 2250,
+        "grosir": 2500,
+        "eceran": 2900
+      }
+    },
+    {
+      "id": "87",
+      "name": "SUSEMI SABUT SPON 24X12",
+      "category": "SPON",
+      "prices": {
+        "net": 1300,
+        "grosir": 1500,
+        "eceran": 1750
+      }
+    }
+  ]
+}
