@@ -9,7 +9,7 @@ interface ItemGridProps {
 
 export function ItemGrid({ items, priceType, onAddItem }: ItemGridProps) {
   return (
-    <div className="flex-1 p-6 overflow-auto bg-gray-50">
+    <div className="flex-1 p-3 sm:p-6 overflow-auto bg-gray-50">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {items.map((item) => (
           <ItemCard

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import type { CartItem as CartItemType, PriceType } from '../types';
 import { CartItemRow } from './CartItem';
 import { formatCurrency } from '../utils/formatCurrency';
@@ -22,12 +23,24 @@ export function Cart({
   onClear,
   onPrint,
 }: CartProps) {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const isEmpty = items.length === 0;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div
-      className="bg-white flex flex-col flex-shrink-0"
-      style={{ width: `${width}px` }}
+      className="bg-white flex flex-col flex-shrink-0 border-t lg:border-t-0 lg:border-l border-gray-200 shadow-xl lg:shadow-none z-10"
+      style={{ 
+        width: isMobile ? '100%' : `${width}px`,
+        height: isMobile ? '50vh' : 'auto'
+      }}
     >
       <div className="px-5 py-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900">Pesanan</h2>

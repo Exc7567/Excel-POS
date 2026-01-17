@@ -93,7 +93,7 @@ function App() {
     >
       <Header priceType={priceType} onPriceTypeChange={setPriceType} />
 
-      <div ref={containerRef} className="flex-1 flex overflow-hidden">
+      <div ref={containerRef} className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         <ItemGrid
           items={items}
           priceType={priceType}
@@ -103,7 +103,7 @@ function App() {
         {/* Resize Handle */}
         <div
           onMouseDown={handleMouseDown}
-          className={`w-1 bg-gray-200 hover:bg-gray-400 cursor-col-resize transition-colors flex-shrink-0 ${
+          className={`hidden lg:block w-1 bg-gray-200 hover:bg-gray-400 cursor-col-resize transition-colors flex-shrink-0 ${
             isResizing ? 'bg-gray-400' : ''
           }`}
         />

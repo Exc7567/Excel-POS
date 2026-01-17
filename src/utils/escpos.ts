@@ -1,4 +1,4 @@
-import type { CartItem } from '../types';
+import type { CartItem } from "../types";
 
 // ESC/POS Commands
 const ESC = 0x1b;
@@ -36,41 +36,46 @@ function textToBytes(text: string): Uint8Array {
 }
 
 function padRight(str: string, length: number): string {
-  return str.length >= length ? str.substring(0, length) : str + ' '.repeat(length - str.length);
+  return str.length >= length
+    ? str.substring(0, length)
+    : str + " ".repeat(length - str.length);
 }
 
 function padLeft(str: string, length: number): string {
-  return str.length >= length ? str.substring(0, length) : ' '.repeat(length - str.length) + str;
+  return str.length >= length
+    ? str.substring(0, length)
+    : " ".repeat(length - str.length) + str;
 }
 
-function createLine(char: string = '-'): string {
-  return char.repeat(LINE_WIDTH) + '\n';
+function createLine(char: string = "-"): string {
+  return char.repeat(LINE_WIDTH) + "\n";
 }
 
 function formatPrice(price: number): string {
-  return new Intl.NumberFormat('id-ID').format(price);
+  return new Intl.NumberFormat("id-ID").format(price);
 }
 
 function formatItemLine(name: string, qty: number, price: string): string {
   const qtyStr = `x${qty}`;
   const nameMaxLen = LINE_WIDTH - qtyStr.length - price.length - 2;
-  const truncatedName = name.length > nameMaxLen ? name.substring(0, nameMaxLen) : name;
+  const truncatedName =
+    name.length > nameMaxLen ? name.substring(0, nameMaxLen) : name;
 
   const leftPart = padRight(truncatedName, nameMaxLen);
-  const rightPart = padLeft(qtyStr + ' ' + price, LINE_WIDTH - nameMaxLen);
+  const rightPart = padLeft(qtyStr + " " + price, LINE_WIDTH - nameMaxLen);
 
-  return leftPart + rightPart + '\n';
+  return leftPart + rightPart + "\n";
 }
 
 function formatTotalLine(label: string, value: string): string {
   const labelPadded = padRight(label, LINE_WIDTH - value.length);
-  return labelPadded + value + '\n';
+  return labelPadded + value + "\n";
 }
 
 function centerText(text: string): string {
-  if (text.length >= LINE_WIDTH) return text.substring(0, LINE_WIDTH) + '\n';
+  if (text.length >= LINE_WIDTH) return text.substring(0, LINE_WIDTH) + "\n";
   const padding = Math.floor((LINE_WIDTH - text.length) / 2);
-  return ' '.repeat(padding) + text + '\n';
+  return " ".repeat(padding) + text + "\n";
 }
 
 export interface ReceiptData {
@@ -82,44 +87,55 @@ export interface ReceiptData {
 export function generateReceipt(data: ReceiptData): Uint8Array {
   const { storeName, items, total } = data;
   const now = new Date();
-  const dateStr = now.toLocaleDateString('id-ID');
-  const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString("id-ID");
+  const timeStr = now.toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const parts: Uint8Array[] = [
     INIT,
     ALIGN_CENTER,
     BOLD_ON,
-    textToBytes(createLine('=')),
+    textToBytes(createLine("=")),
     DOUBLE_SIZE_ON,
     textToBytes(centerText(storeName)),
     NORMAL_SIZE,
-    textToBytes(createLine('=')),
+    textToBytes(createLine("=")),
     BOLD_OFF,
     ALIGN_LEFT,
     textToBytes(`Tanggal: ${dateStr}  Jam: ${timeStr}\n`),
     FEED_LINE,
-    textToBytes(createLine('-')),
+    textToBytes(createLine("-")),
   ];
 
   // Add items
   for (const item of items) {
     const price = item.prices[item.priceType];
-    parts.push(textToBytes(formatItemLine(item.name, item.quantity, formatPrice(price * item.quantity))));
+    parts.push(
+      textToBytes(
+        formatItemLine(
+          item.name,
+          item.quantity,
+          formatPrice(price * item.quantity),
+        ),
+      ),
+    );
   }
 
   parts.push(
-    textToBytes(createLine('-')),
+    textToBytes(createLine("-")),
     BOLD_ON,
-    textToBytes(createLine('=')),
+    textToBytes(createLine("=")),
     DOUBLE_HEIGHT_ON,
-    textToBytes(formatTotalLine('TOTAL:', formatPrice(total))),
+    textToBytes(formatTotalLine("TOTAL:", formatPrice(total))),
     NORMAL_SIZE,
     BOLD_OFF,
-    textToBytes(createLine('=')),
+    textToBytes(createLine("=")),
     FEED_LINE,
     ALIGN_CENTER,
-    textToBytes(centerText('Terima kasih!')),
-    textToBytes(centerText('Semoga hari Anda menyenangkan')),
+    textToBytes(centerText("Terima kasih!")),
+    textToBytes(centerText("Semoga hari Anda menyenangkan")),
     FEED_LINES(4),
     PARTIAL_CUT,
   );
@@ -141,29 +157,36 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
 export function generateReceiptText(data: ReceiptData): string {
   const { storeName, items, total } = data;
   const now = new Date();
-  const dateStr = now.toLocaleDateString('id-ID');
-  const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString("id-ID");
+  const timeStr = now.toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-  let text = '';
-  text += createLine('=');
+  let text = "";
+  text += createLine("=");
   text += centerText(storeName);
-  text += createLine('=');
+  text += createLine("=");
   text += `Tanggal: ${dateStr}  Jam: ${timeStr}\n`;
-  text += '\n';
-  text += createLine('-');
+  text += "\n";
+  text += createLine("-");
 
   for (const item of items) {
     const price = item.prices[item.priceType];
-    text += formatItemLine(item.name, item.quantity, formatPrice(price * item.quantity));
+    text += formatItemLine(
+      item.name,
+      item.quantity,
+      formatPrice(price * item.quantity),
+    );
   }
 
-  text += createLine('-');
-  text += createLine('=');
-  text += formatTotalLine('TOTAL:', formatPrice(total));
-  text += createLine('=');
-  text += '\n';
-  text += centerText('Terima kasih!');
-  text += centerText('Semoga hari Anda menyenangkan');
+  text += createLine("-");
+  text += createLine("=");
+  text += formatTotalLine("TOTAL:", formatPrice(total));
+  text += createLine("=");
+  text += "\n";
+  text += centerText("Terima kasih!");
+  text += centerText("Semoga hari Anda menyenangkan");
 
   return text;
 }
