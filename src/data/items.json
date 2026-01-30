@@ -113,7 +113,7 @@
     {
       "id": "12",
       "name": "RIMBA",
-      "category": "KECAP SAOS",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 9420,
         "grosir": 9750,
@@ -123,7 +123,7 @@
     {
       "id": "13",
       "name": "TAWON",
-      "category": "KECAP SAOS",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 15000,
@@ -133,7 +133,7 @@
     {
       "id": "14",
       "name": "DORANG II",
-      "category": "KECAP SAOS",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 18000,
@@ -143,7 +143,7 @@
     {
       "id": "15",
       "name": "BANGAU BOTOL",
-      "category": "KECAP SAOS",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 10000,
@@ -153,7 +153,7 @@
     {
       "id": "16",
       "name": "KECAP MANIS SEDAAP POUCH 77 GR (48)",
-      "category": "KECAP SAOS",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 58700,
         "grosir": 1350,
@@ -163,7 +163,7 @@
     {
       "id": "17",
       "name": "TAWON BOTOL PLASTIK",
-      "category": "KECAP SAOS",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 16500,
@@ -173,7 +173,7 @@
     {
       "id": "18",
       "name": "BENDERA SASET",
-      "category": "SUSU",
+      "category": "SUSU & MINUMAN",
       "prices": {
         "net": 0,
         "grosir": 8000,
@@ -183,7 +183,7 @@
     {
       "id": "19",
       "name": "BENDERA KALENG",
-      "category": "SUSU",
+      "category": "SUSU & MINUMAN",
       "prices": {
         "net": 0,
         "grosir": 12000,
@@ -193,7 +193,7 @@
     {
       "id": "20",
       "name": "INDOMILK STERIL BOTOL (24) CH/STR",
-      "category": "SUSU",
+      "category": "SUSU & MINUMAN",
       "prices": {
         "net": 81144,
         "grosir": 82500,
@@ -203,7 +203,7 @@
     {
       "id": "21",
       "name": "INDOMILK KALENG PUTIH",
-      "category": "SUSU",
+      "category": "SUSU & MINUMAN",
       "prices": {
         "net": 0,
         "grosir": 12000,
@@ -213,7 +213,7 @@
     {
       "id": "22",
       "name": "OMELA KECIL",
-      "category": "SUSU",
+      "category": "SUSU & MINUMAN",
       "prices": {
         "net": 0,
         "grosir": 10000,
@@ -223,7 +223,7 @@
     {
       "id": "23",
       "name": "OMELA BESAR",
-      "category": "SUSU",
+      "category": "SUSU & MINUMAN",
       "prices": {
         "net": 0,
         "grosir": 12500,
@@ -233,7 +233,7 @@
     {
       "id": "24",
       "name": "DANCOW",
-      "category": "SUSU",
+      "category": "SUSU & MINUMAN",
       "prices": {
         "net": 0,
         "grosir": 35500,
@@ -243,7 +243,7 @@
     {
       "id": "25",
       "name": "MILO",
-      "category": "SUSU",
+      "category": "SUSU & MINUMAN",
       "prices": {
         "net": 0,
         "grosir": 18500,
@@ -253,7 +253,7 @@
     {
       "id": "26",
       "name": "CARNETION",
-      "category": "SUSU",
+      "category": "SUSU & MINUMAN",
       "prices": {
         "net": 14000,
         "grosir": 14500,
@@ -263,7 +263,7 @@
     {
       "id": "27",
       "name": "ENERGEN",
-      "category": "SUSU",
+      "category": "SUSU & MINUMAN",
       "prices": {
         "net": 0,
         "grosir": 19000,
@@ -273,7 +273,7 @@
     {
       "id": "28",
       "name": "GIV",
-      "category": "SABUN",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 0,
         "grosir": 2700,
@@ -283,7 +283,7 @@
     {
       "id": "29",
       "name": "GENTLE",
-      "category": "SABUN",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 0,
         "grosir": 10000,
@@ -293,7 +293,7 @@
     {
       "id": "30",
       "name": "RINSO 1000 (12)",
-      "category": "SABUN",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 90000,
         "grosir": 10000,
@@ -303,7 +303,7 @@
     {
       "id": "31",
       "name": "RINSO 5000",
-      "category": "SABUN",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 0,
         "grosir": 4500,
@@ -313,7 +313,7 @@
     {
       "id": "32",
       "name": "SITRUN",
-      "category": "SABUN",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 0,
         "grosir": 40000,
@@ -323,7 +323,7 @@
     {
       "id": "33",
       "name": "DAIA 1000",
-      "category": "SABUN",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 0,
         "grosir": 10000,
@@ -333,7 +333,7 @@
     {
       "id": "34",
       "name": "POWDET BOOM CINTA ROSE BAG 225GR (36)",
-      "category": "SABUN",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 99300,
         "grosir": 100000,
@@ -343,7 +343,7 @@
     {
       "id": "35",
       "name": "SABUN JAZ1 1 KG (12)",
-      "category": "SABUN",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 181100,
         "grosir": 15500,
@@ -353,7 +353,7 @@
     {
       "id": "36",
       "name": "SABUN JAZ1 RENTENG (24)",
-      "category": "SABUN",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 110000,
         "grosir": 115000,
@@ -443,7 +443,7 @@
     {
       "id": "45",
       "name": "MIWON 1000",
-      "category": "BUMBU",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 21000,
@@ -453,7 +453,7 @@
     {
       "id": "46",
       "name": "MIWON 1/2 ONS",
-      "category": "BUMBU",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 54000,
@@ -463,7 +463,7 @@
     {
       "id": "47",
       "name": "MIWON 1/4 ONS",
-      "category": "BUMBU",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 110000,
@@ -473,7 +473,7 @@
     {
       "id": "48",
       "name": "LADAKU",
-      "category": "BUMBU",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 10000,
@@ -483,7 +483,7 @@
     {
       "id": "49",
       "name": "ROYCO 220 AYAM",
-      "category": "BUMBU",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 197000,
         "grosir": 0,
@@ -493,7 +493,7 @@
     {
       "id": "50",
       "name": "ROYCO",
-      "category": "BUMBU",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 4750,
@@ -503,7 +503,7 @@
     {
       "id": "51",
       "name": "MASAKO",
-      "category": "BUMBU",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 4750,
@@ -513,7 +513,7 @@
     {
       "id": "52",
       "name": "GROSOK",
-      "category": "GARAM",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 26350,
         "grosir": 27500,
@@ -523,7 +523,7 @@
     {
       "id": "53",
       "name": "CERDIK HALUS",
-      "category": "GARAM",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 28500,
         "grosir": 31500,
@@ -533,7 +533,7 @@
     {
       "id": "54",
       "name": "MINYAK KITA",
-      "category": "MINYAK",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 210000,
@@ -543,7 +543,7 @@
     {
       "id": "55",
       "name": "SANCO 1 LT (12)",
-      "category": "MINYAK",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 239000,
         "grosir": 21000,
@@ -553,7 +553,7 @@
     {
       "id": "56",
       "name": "MINYAK BM",
-      "category": "MINYAK",
+      "category": "BUMBU MASAKAN",
       "prices": {
         "net": 0,
         "grosir": 18500,
@@ -563,7 +563,7 @@
     {
       "id": "57",
       "name": "TOP PLUS CARTON (12 RTG)",
-      "category": "KOPI TEH",
+      "category": "KOPI & TEH",
       "prices": {
         "net": 85000,
         "grosir": 95000,
@@ -573,7 +573,7 @@
     {
       "id": "58",
       "name": "KAPAL API RENTENG",
-      "category": "KOPI TEH",
+      "category": "KOPI & TEH",
       "prices": {
         "net": 0,
         "grosir": 0,
@@ -583,7 +583,7 @@
     {
       "id": "59",
       "name": "KAPAL API MINI",
-      "category": "KOPI TEH",
+      "category": "KOPI & TEH",
       "prices": {
         "net": 0,
         "grosir": 0,
@@ -593,7 +593,7 @@
     {
       "id": "60",
       "name": "TEH NAGA",
-      "category": "KOPI TEH",
+      "category": "KOPI & TEH",
       "prices": {
         "net": 0,
         "grosir": 19000,
@@ -603,7 +603,7 @@
     {
       "id": "61",
       "name": "TEH 999",
-      "category": "KOPI TEH",
+      "category": "KOPI & TEH",
       "prices": {
         "net": 0,
         "grosir": 0,
@@ -613,7 +613,7 @@
     {
       "id": "62",
       "name": "ANGET SARI SUSU JAHE 250 (5X10) 28GR",
-      "category": "KOPI TEH",
+      "category": "KOPI & TEH",
       "prices": {
         "net": 270500,
         "grosir": 14000,
@@ -623,7 +623,7 @@
     {
       "id": "63",
       "name": "NUTRIJELL EKO CINGCAU (12X12)",
-      "category": "KOPI TEH",
+      "category": "DESSERT",
       "prices": {
         "net": 1670,
         "grosir": 20000,
@@ -633,7 +633,7 @@
     {
       "id": "64",
       "name": "NUTRIJELL EKO ANGGUR (12X12)",
-      "category": "KOPI TEH",
+      "category": "DESSERT",
       "prices": {
         "net": 1670,
         "grosir": 20000,
@@ -643,7 +643,7 @@
     {
       "id": "65",
       "name": "NUTRIJELL EKO KELAPA MUDA (12X12)",
-      "category": "KOPI TEH",
+      "category": "DESSERT",
       "prices": {
         "net": 1670,
         "grosir": 20000,
@@ -653,7 +653,7 @@
     {
       "id": "66",
       "name": "NUTRIJELL EKO LECI",
-      "category": "KOPI TEH",
+      "category": "DESSERT",
       "prices": {
         "net": 1670,
         "grosir": 20000,
@@ -663,7 +663,7 @@
     {
       "id": "67",
       "name": "NUTRIJELL EKO PLAIN",
-      "category": "KOPI TEH",
+      "category": "DESSERT",
       "prices": {
         "net": 1670,
         "grosir": 20000,
@@ -673,7 +673,7 @@
     {
       "id": "68",
       "name": "NUTRIJELL EKO COKLAT (12X12)",
-      "category": "KOPI TEH",
+      "category": "DESSERT",
       "prices": {
         "net": 2431,
         "grosir": 29200,
@@ -683,7 +683,7 @@
     {
       "id": "69",
       "name": "TEH GOPEK",
-      "category": "KOPI TEH",
+      "category": "KOPI & TEH",
       "prices": {
         "net": 0,
         "grosir": 0,
@@ -693,7 +693,7 @@
     {
       "id": "70",
       "name": "KAPAL API",
-      "category": "KOPI TEH",
+      "category": "KOPI & TEH",
       "prices": {
         "net": 0,
         "grosir": 0,
@@ -703,7 +703,7 @@
     {
       "id": "71",
       "name": "TOLAK ANGIN",
-      "category": "OBAT",
+      "category": "KESEHATAN & KEBERSIHAN",
       "prices": {
         "net": 0,
         "grosir": 46000,
@@ -713,7 +713,7 @@
     {
       "id": "72",
       "name": "DECOLGEN",
-      "category": "OBAT",
+      "category": "KESEHATAN & KEBERSIHAN",
       "prices": {
         "net": 0,
         "grosir": 0,
@@ -773,7 +773,7 @@
     {
       "id": "78",
       "name": "POWDET BOOM CINTA ROSE BAG 225GR",
-      "category": "SABUN",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 99300,
         "grosir": 100000,
@@ -783,7 +783,7 @@
     {
       "id": "79",
       "name": "JOLLY FACIAL SOFT PACK (4)",
-      "category": "TISSUE",
+      "category": "KESEHATAN & KEBERSIHAN",
       "prices": {
         "net": 328000,
         "grosir": 84000,
@@ -793,7 +793,7 @@
     {
       "id": "80",
       "name": "PASEO SMART FACIAL SOFT 48X540",
-      "category": "TISSUE",
+      "category": "KESEHATAN & KEBERSIHAN",
       "prices": {
         "net": 423601,
         "grosir": 9000,
@@ -803,7 +803,7 @@
     {
       "id": "81",
       "name": "CHARM EXTRA MAXI NON WING 8M (24)",
-      "category": "PEMBALUT",
+      "category": "KESEHATAN & KEBERSIHAN",
       "prices": {
         "net": 262429,
         "grosir": 12000,
@@ -813,7 +813,7 @@
     {
       "id": "82",
       "name": "CHARM EXTRA MAXI WING 70 (24)",
-      "category": "PEMBALUT",
+      "category": "KESEHATAN & KEBERSIHAN",
       "prices": {
         "net": 329474,
         "grosir": 14500,
@@ -823,7 +823,7 @@
     {
       "id": "83",
       "name": "CHARM EXTRA MAXI WING 100 (24)",
-      "category": "PEMBALUT",
+      "category": "KESEHATAN & KEBERSIHAN",
       "prices": {
         "net": 59164,
         "grosir": 19500,
@@ -833,7 +833,7 @@
     {
       "id": "84",
       "name": "CHARM EXTRA KERING L",
-      "category": "PEMBALUT",
+      "category": "KESEHATAN & KEBERSIHAN",
       "prices": {
         "net": 1550,
         "grosir": 1750,
@@ -843,7 +843,7 @@
     {
       "id": "85",
       "name": "CHARM EXTRA KERING XL",
-      "category": "PEMBALUT",
+      "category": "KESEHATAN & KEBERSIHAN",
       "prices": {
         "net": 1900,
         "grosir": 2250,
@@ -853,7 +853,7 @@
     {
       "id": "86",
       "name": "CHARM EXTRA KERING XXL",
-      "category": "PEMBALUT",
+      "category": "KESEHATAN & KEBERSIHAN",
       "prices": {
         "net": 2250,
         "grosir": 2500,
@@ -863,7 +863,7 @@
     {
       "id": "87",
       "name": "SUSEMI SABUT SPON 24X12",
-      "category": "SPON",
+      "category": "SABUN & DETERGEN",
       "prices": {
         "net": 1300,
         "grosir": 1500,

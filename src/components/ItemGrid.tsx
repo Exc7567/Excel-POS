@@ -1,47 +1,71 @@
-import React from "react";
+import React, { useMemo } from "react";
 import type { Item, PriceType } from "../types";
 import { ItemCard } from "./ItemCard";
+import { CategoryTabs } from "./CategoryTabs";
 
 interface ItemGridProps {
   items: Item[];
   priceType: PriceType;
   onAddItem: (item: Item) => void;
-  onEditItem?: (item: Item) => void;
 }
 
-export function ItemGrid({
+interface ItemGridWithSearchProps extends ItemGridProps {
+  searchQuery: string;
+}
+
+export function ItemGridWithSearch({
   items,
   priceType,
   onAddItem,
-  onEditItem,
-}: ItemGridProps) {
-  const [search, setSearch] = React.useState("");
-  const filteredItems = items.filter(
-    (item) =>
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      (item.category &&
-        item.category.toLowerCase().includes(search.toLowerCase())),
+  searchQuery,
+}: ItemGridWithSearchProps) {
+  const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
+    null,
   );
+
+  const categories = useMemo(() => {
+    const cats = items
+      .map((item) => item.category)
+      .filter((cat): cat is string => cat !== undefined);
+    return [...new Set(cats)].sort();
+  }, [items]);
+
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      const matchesSearch =
+        !searchQuery ||
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.category &&
+          item.category.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesCategory =
+        !selectedCategory || item.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [items, searchQuery, selectedCategory]);
+
   return (
     <div className="flex-1 p-3 sm:p-6 overflow-auto bg-gray-50">
-      <input
-        type="text"
-        placeholder="Cari barang..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-3 w-full p-2 border rounded shadow-sm focus:outline-none focus:ring"
+      <CategoryTabs
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
       />
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        {filteredItems.map((item) => (
-          <ItemCard
-            key={item.id}
-            item={item}
-            priceType={priceType}
-            onAdd={onAddItem}
-            onEdit={onEditItem}
-          />
-        ))}
-      </div>
+      {filteredItems.length === 0 ? (
+        <div className="text-center text-gray-500 py-8">
+          Tidak ada item ditemukan
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {filteredItems.map((item) => (
+            <ItemCard
+              key={item.id}
+              item={item}
+              priceType={priceType}
+              onAdd={onAddItem}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

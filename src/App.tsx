@@ -1,104 +1,61 @@
-import React, { useState, useCallback, useRef } from "react";
+import { useState } from "react";
 import { Header } from "./components/Header";
-import { ItemGrid } from "./components/ItemGrid";
+import { ItemGridWithSearch } from "./components/ItemGrid";
 import { Cart } from "./components/Cart";
+import { Sidebar } from "./components/Sidebar";
+import { ImportExportModal } from "./components/ImportExportModal";
+import { TransactionHistory } from "./components/TransactionHistory";
+import { TransactionDetail } from "./components/TransactionDetail";
+import { ReportsModal } from "./components/ReportsModal";
+import { EditItemsModal } from "./components/EditItemsModal";
 import { useCart } from "./hooks/useCart";
+import { useItems } from "./hooks/useItems";
+import { useTransactions } from "./hooks/useTransactions";
 import { generateReceiptText } from "./utils/escpos";
-import itemsData from "./data/items.json";
+import { generateTransactionId } from "./types/transaction";
 import type { Item, PriceType } from "./types";
+import type { Transaction } from "./types/transaction";
 
-const STORE_NAME = "Sembako Makmur Jaya";
-const items: Item[] = itemsData.items;
-
-const MIN_SIDEBAR_WIDTH = 320;
-const MAX_SIDEBAR_WIDTH = 600;
-const DEFAULT_SIDEBAR_WIDTH = 384;
+const STORE_NAME = "Sumber Kasih POS System";
+const CART_WIDTH = 384;
 
 function App() {
+  const [activeTab, setActiveTab] = useState('pos');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(window.innerWidth >= 1024);
   const [priceType, setPriceType] = useState<PriceType>("grosir");
-  const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_WIDTH);
-  const [isResizing, setIsResizing] = useState(false);
-  const [editItem, setEditItem] = useState<Item | null>(null);
-  const [editValues, setEditValues] = useState<{
-    name: string;
-    category: string;
-    prices: { net: number; grosir: number; eceran: number };
-  } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+
   const cart = useCart();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { items, updateItem, setItems, deleteItem } = useItems();
+  const { transactions, addTransaction, stats, exportToCSV, clearAll } = useTransactions();
+
+  // Legacy edit states removed
 
   const handleAddItem = (item: Item) => {
     cart.addItem(item, priceType);
   };
 
-  const handleEditItem = (item: Item) => {
-    setEditItem(item);
-    setEditValues({
-      name: item.name,
-      category: item.category || "",
-      prices: { ...item.prices },
-    });
+  const handleImport = (importedItems: Item[]) => {
+    setItems(importedItems);
   };
-
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!editValues) return;
-    const { name, value } = e.target;
-    if (name === "name") {
-      setEditValues({ ...editValues, name: value });
-      return;
-    }
-    if (name === "category") {
-      setEditValues({ ...editValues, category: value });
-      return;
-    }
-    // price fields: net, grosir, eceran
-    if (name === "net" || name === "grosir" || name === "eceran") {
-      setEditValues({
-        ...editValues,
-        prices: { ...editValues.prices, [name]: Number(value) },
-      });
-    }
-  };
-
-  const handleEditSave = () => {
-    if (!editItem || !editValues) return;
-    // This only updates in-memory, not persistent storage
-    editItem.name = editValues.name;
-    editItem.category = editValues.category;
-    editItem.prices = { ...editValues.prices };
-    setEditItem(null);
-    setEditValues(null);
-  };
-
-  const handleEditCancel = () => {
-    setEditItem(null);
-    setEditValues(null);
-  };
-
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsResizing(true);
-  }, []);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!isResizing || !containerRef.current) return;
-
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const newWidth = containerRect.right - e.clientX;
-
-      if (newWidth >= MIN_SIDEBAR_WIDTH && newWidth <= MAX_SIDEBAR_WIDTH) {
-        setSidebarWidth(newWidth);
-      }
-    },
-    [isResizing],
-  );
-
-  const handleMouseUp = useCallback(() => {
-    setIsResizing(false);
-  }, []);
 
   const handlePrint = () => {
+    // ... same printing logic ...
+    if (cart.items.length === 0) return;
+
+    const transaction: Transaction = {
+      id: generateTransactionId(),
+      items: [...cart.items],
+      subtotal: cart.subtotal,
+      total: cart.total,
+      priceType,
+      timestamp: new Date(),
+    };
+
+    addTransaction(transaction);
+
     const receiptData = {
       storeName: STORE_NAME,
       items: cart.items,
@@ -106,9 +63,8 @@ function App() {
     };
 
     const text = generateReceiptText(receiptData);
-    console.log(text);
+    // console.log(text);
 
-    // Create a printable window
     const printWindow = window.open("", "_blank", "width=400,height=600");
     if (printWindow) {
       printWindow.document.write(`
@@ -137,115 +93,110 @@ function App() {
     }
   };
 
-  return (
-    <div
-      className="h-full flex flex-col bg-gray-50"
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-    >
-      <Header priceType={priceType} onPriceTypeChange={setPriceType} />
-
-      <div
-        ref={containerRef}
-        className="flex-1 flex flex-col lg:flex-row overflow-hidden"
-      >
-        <ItemGrid
-          items={items}
-          priceType={priceType}
-          onAddItem={handleAddItem}
-          onEditItem={handleEditItem}
-        />
-
-        {/* Resize Handle */}
-        <div
-          onMouseDown={handleMouseDown}
-          className={`hidden lg:block w-1 bg-gray-200 hover:bg-gray-400 cursor-col-resize transition-colors flex-shrink-0 ${
-            isResizing ? "bg-gray-400" : ""
-          }`}
-        />
-
-        <Cart
-          items={cart.items}
-          subtotal={cart.subtotal}
-          total={cart.total}
-          width={sidebarWidth}
-          onUpdateQuantity={cart.updateQuantity}
-          onRemove={cart.removeItem}
-          onClear={cart.clearCart}
-          onPrint={handlePrint}
-        />
-      </div>
-
-      {/* Edit Modal */}
-      {editItem && editValues && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
-            <h3 className="text-lg font-semibold mb-4">Edit Item</h3>
-            <div className="mb-2">
-              <label className="block text-sm font-medium">Nama</label>
-              <input
-                name="name"
-                value={editValues.name}
-                onChange={handleEditChange}
-                className="w-full border p-2 rounded mt-1"
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'pos':
+        return (
+          <div className="flex-1 flex flex-col h-full overflow-hidden">
+            <Header
+              priceType={priceType}
+              onPriceTypeChange={setPriceType}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+              <ItemGridWithSearch
+                items={items}
+                priceType={priceType}
+                onAddItem={handleAddItem}
+                searchQuery={searchQuery}
               />
-            </div>
-            <div className="mb-2">
-              <label className="block text-sm font-medium">Kategori</label>
-              <input
-                name="category"
-                value={editValues.category}
-                onChange={handleEditChange}
-                className="w-full border p-2 rounded mt-1"
+              <Cart
+                items={cart.items}
+                subtotal={cart.subtotal}
+                total={cart.total}
+                width={CART_WIDTH}
+                onUpdateQuantity={cart.updateQuantity}
+                onRemove={cart.removeItem}
+                onClear={cart.clearCart}
+                onPrint={handlePrint}
               />
-            </div>
-            <div className="mb-2">
-              <label className="block text-sm font-medium">Harga Net</label>
-              <input
-                name="net"
-                type="number"
-                value={editValues.prices.net}
-                onChange={handleEditChange}
-                className="w-full border p-2 rounded mt-1"
-              />
-            </div>
-            <div className="mb-2">
-              <label className="block text-sm font-medium">Harga Grosir</label>
-              <input
-                name="grosir"
-                type="number"
-                value={editValues.prices.grosir}
-                onChange={handleEditChange}
-                className="w-full border p-2 rounded mt-1"
-              />
-            </div>
-            <div className="mb-2">
-              <label className="block text-sm font-medium">Harga Eceran</label>
-              <input
-                name="eceran"
-                type="number"
-                value={editValues.prices.eceran}
-                onChange={handleEditChange}
-                className="w-full border p-2 rounded mt-1"
-              />
-            </div>
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={handleEditSave}
-                className="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Simpan
-              </button>
-              <button
-                onClick={handleEditCancel}
-                className="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-              >
-                Batal
-              </button>
             </div>
           </div>
-        </div>
+        );
+      case 'reports':
+        return (
+          <ReportsModal
+            transactions={transactions}
+          />
+        );
+      case 'history':
+        return (
+          <TransactionHistory
+            transactions={transactions}
+            onSelectTransaction={setSelectedTransaction}
+            stats={stats}
+            onExportCSV={() => {
+              const csv = exportToCSV();
+              const blob = new Blob([csv], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `transactions_${new Date().toISOString().slice(0, 10)}.csv`;
+              link.click();
+            }}
+            onClearAll={clearAll}
+          />
+        );
+      case 'data':
+        return (
+          <ImportExportModal
+            currentItems={items}
+            onImport={handleImport}
+          />
+        );
+      case 'edit':
+        return (
+          <EditItemsModal
+            items={items}
+            onUpdateItem={updateItem}
+            onDeleteItem={deleteItem}
+          />
+        );
+      default:
+        return <div>Not Found</div>;
+    }
+  };
+
+  return (
+    <div className="h-screen flex bg-gray-50 overflow-hidden">
+      <Sidebar
+        isOpen={sidebarOpen}
+        onToggle={() => {
+          const newState = !sidebarOpen;
+          setSidebarOpen(newState);
+          setSidebarExpanded(newState);
+        }}
+        isExpanded={sidebarExpanded}
+        onExpandedChange={setSidebarExpanded}
+        activeTab={activeTab}
+        onTabChange={(tab: string) => {
+          setActiveTab(tab);
+          setSidebarOpen(false);
+        }}
+        transactionCount={transactions.length}
+      />
+
+      <div className={`flex-1 flex flex-col h-full overflow-hidden transition-all duration-300 ml-0 ${sidebarExpanded ? 'lg:ml-64' : 'lg:ml-16'}`}>
+        {renderContent()}
+      </div>
+
+      {/* Transaction Detail Modal (Still a popup) */}
+      {selectedTransaction && (
+        <TransactionDetail
+          transaction={selectedTransaction}
+          onClose={() => setSelectedTransaction(null)}
+        />
       )}
     </div>
   );
