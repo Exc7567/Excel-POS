@@ -1,38 +1,149 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import type { Item } from '../types';
-import { loadItems, saveItems, resetItems } from '../utils/storage';
+import { supabase } from '../supabaseClient.js';
+
 
 export function useItems() {
-  const [items, setItems] = useState<Item[]>(() => loadItems());
+  const [items, setItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Fetch items from Supabase on mount
   useEffect(() => {
-    saveItems(items);
-  }, [items]);
-
-  const updateItem = useCallback((id: string, updates: Partial<Item>) => {
-    setItems(prev => prev.map(item => 
-      item.id === id ? { ...item, ...updates } : item
-    ));
+    const fetchItems = async () => {
+      setLoading(true);
+      setError(null);
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, category, net, grosir, eceran');
+      if (error) {
+        setError('Failed to fetch items from database.');
+        setItems([]);
+      } else {
+        // Map Supabase data to Item[]
+        setItems(
+          (data || []).map((row: any) => ({
+            id: row.id,
+            name: row.name,
+            category: row.category,
+            prices: {
+              net: row.net,
+              grosir: row.grosir,
+              eceran: row.eceran,
+            },
+          }))
+        );
+      }
+      setLoading(false);
+    };
+    fetchItems();
   }, []);
 
-  const deleteItem = useCallback((id: string) => {
-    setItems(prev => prev.filter(item => item.id !== id));
+
+  // Update item in Supabase
+  const updateItem = useCallback(async (id: string, updates: Partial<Item>) => {
+    setLoading(true);
+    setError(null);
+    const { error } = await supabase
+      .from('products')
+      .update({
+        name: updates.name,
+        category: updates.category,
+        net: updates.prices?.net,
+        grosir: updates.prices?.grosir,
+        eceran: updates.prices?.eceran,
+      })
+      .eq('id', id);
+    if (error) setError('Failed to update item.');
+    // Refetch items
+    const { data } = await supabase
+      .from('products')
+      .select('id, name, category, net, grosir, eceran');
+    setItems(
+      (data || []).map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        category: row.category,
+        prices: {
+          net: row.net,
+          grosir: row.grosir,
+          eceran: row.eceran,
+        },
+      }))
+    );
+    setLoading(false);
   }, []);
 
-  const addItem = useCallback((newItem: Omit<Item, 'id'> & { id?: string }) => {
-    const item: Item = {
-      id: newItem.id || `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+
+  // Delete item in Supabase
+  const deleteItem = useCallback(async (id: string) => {
+    setLoading(true);
+    setError(null);
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+    if (error) setError('Failed to delete item.');
+    // Refetch items
+    const { data } = await supabase
+      .from('products')
+      .select('id, name, category, net, grosir, eceran');
+    setItems(
+      (data || []).map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        category: row.category,
+        prices: {
+          net: row.net,
+          grosir: row.grosir,
+          eceran: row.eceran,
+        },
+      }))
+    );
+    setLoading(false);
+  }, []);
+
+
+  // Add item to Supabase
+  const addItem = useCallback(async (newItem: Omit<Item, 'id'> & { id?: string }) => {
+    setLoading(true);
+    setError(null);
+    // Insert id if present, otherwise let Supabase autogenerate
+    const insertObj: any = {
       name: newItem.name,
       category: newItem.category,
-      prices: newItem.prices,
+      net: newItem.prices.net,
+      grosir: newItem.prices.grosir,
+      eceran: newItem.prices.eceran,
     };
-    setItems(prev => [...prev, item]);
+    if (newItem.id) insertObj.id = newItem.id;
+    const { error } = await supabase
+      .from('products')
+      .insert(insertObj);
+    if (error) setError('Failed to add item.');
+    // Refetch items
+    const { data } = await supabase
+      .from('products')
+      .select('id, name, category, net, grosir, eceran');
+    setItems(
+      (data || []).map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        category: row.category,
+        prices: {
+          net: row.net,
+          grosir: row.grosir,
+          eceran: row.eceran,
+        },
+      }))
+    );
+    setLoading(false);
   }, []);
 
-  const resetToDefault = useCallback(() => {
-    resetItems();
-    setItems(loadItems());
-  }, []);
+
+  // No resetToDefault for live DB
+  const resetToDefault = useCallback(() => {}, []);
 
   return {
     items,
@@ -41,5 +152,7 @@ export function useItems() {
     addItem,
     resetToDefault,
     setItems,
+    loading,
+    error,
   };
 }

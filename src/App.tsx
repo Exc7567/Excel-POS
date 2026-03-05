@@ -28,7 +28,7 @@ function App() {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
   const cart = useCart();
-  const { items, updateItem, setItems, deleteItem } = useItems();
+  const { items, updateItem, deleteItem, addItem, loading: itemsLoading, error: itemsError } = useItems();
   const { transactions, addTransaction, stats, exportToCSV, clearAll } = useTransactions();
 
   // Legacy edit states removed
@@ -37,8 +37,18 @@ function App() {
     cart.addItem(item, priceType);
   };
 
-  const handleImport = (importedItems: Item[]) => {
-    setItems(importedItems);
+
+
+  // Import: Add or update all imported items in Supabase
+  const handleImport = async (importedItems: Item[]) => {
+    for (const item of importedItems) {
+      const exists = items.some(existing => String(existing.id) === String(item.id));
+      if (exists) {
+        await updateItem(item.id, item);
+      } else {
+        await addItem(item);
+      }
+    }
   };
 
   const handlePrint = () => {
@@ -188,7 +198,13 @@ function App() {
       />
 
       <div className={`flex-1 flex flex-col h-full overflow-hidden transition-all duration-300 ml-0 ${sidebarExpanded ? 'lg:ml-64' : 'lg:ml-16'}`}>
-        {renderContent()}
+        {itemsLoading ? (
+          <div className="flex-1 flex items-center justify-center text-gray-500">Loading items...</div>
+        ) : itemsError ? (
+          <div className="flex-1 flex items-center justify-center text-red-500">{itemsError}</div>
+        ) : (
+          renderContent()
+        )}
       </div>
 
       {/* Transaction Detail Modal (Still a popup) */}

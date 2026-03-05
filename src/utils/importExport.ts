@@ -71,12 +71,12 @@ function parseExcel(buffer: ArrayBuffer): Record<string, string>[] {
 }
 
 function validateAndConvertItem(row: Record<string, string>, rowIndex: number): { item: Item | null; error: ImportError | null } {
-  const id = row.id?.trim();
-  const name = row.name?.trim();
-  const category = row.category?.trim();
-  const net = parseFloat(row.net?.trim() || '0');
-  const grosir = parseFloat(row.grosir?.trim() || '0');
-  const eceran = parseFloat(row.eceran?.trim() || '0');
+  const id = row.id !== undefined && row.id !== null ? String(row.id).trim() : '';
+  const name = row.name !== undefined && row.name !== null ? String(row.name).trim() : '';
+  const category = row.category !== undefined && row.category !== null ? String(row.category).trim() : '';
+  const net = parseFloat(row.net !== undefined && row.net !== null ? String(row.net).trim() : '0');
+  const grosir = parseFloat(row.grosir !== undefined && row.grosir !== null ? String(row.grosir).trim() : '0');
+  const eceran = parseFloat(row.eceran !== undefined && row.eceran !== null ? String(row.eceran).trim() : '0');
 
   const errors: string[] = [];
 
