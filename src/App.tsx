@@ -88,7 +88,7 @@ function App() {
               * { margin: 0; padding: 0; box-sizing: border-box; }
               body {
                 font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
-                font-size: 14px;
+                font-size: 9px;
                 padding: 20px;
                 line-height: 1.5;
                 max-width: 320px;
@@ -97,7 +97,7 @@ function App() {
               .separator {
                 overflow: hidden;
                 white-space: nowrap;
-                font-size: 14px;
+                font-size: 9px;
                 line-height: 1.3;
                 color: #333;
                 letter-spacing: -0.5px;
@@ -156,7 +156,7 @@ function App() {
               }
               .footer {
                 padding: 12px 0 4px;
-                font-size: 14px;
+                font-size: 11px;
               }
               @media print {
                 body { padding: 0; max-width: none; }
