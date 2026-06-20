@@ -42,7 +42,12 @@ export function useItems() {
 
 
   // Update item in Supabase
+<<<<<<< HEAD
   const updateItem = useCallback(async (id: string, updates: Partial<Item>): Promise<boolean> => {
+=======
+  const updateItem = useCallback(async (id: string, updates: Partial<Item>) => {
+    setLoading(true);
+>>>>>>> 489e60b547d4adad56440a87128a90793996b40a
     setError(null);
     const { error } = await supabase
       .from('products')
@@ -54,10 +59,14 @@ export function useItems() {
         eceran: updates.prices?.eceran,
       })
       .eq('id', id);
+<<<<<<< HEAD
     if (error) {
       setError('Failed to update item.');
       return false;
     }
+=======
+    if (error) setError('Failed to update item.');
+>>>>>>> 489e60b547d4adad56440a87128a90793996b40a
     // Refetch items
     const { data } = await supabase
       .from('products')
@@ -74,12 +83,20 @@ export function useItems() {
         },
       }))
     );
+<<<<<<< HEAD
     return true;
+=======
+    setLoading(false);
+>>>>>>> 489e60b547d4adad56440a87128a90793996b40a
   }, []);
 
 
   // Delete item in Supabase
   const deleteItem = useCallback(async (id: string) => {
+<<<<<<< HEAD
+=======
+    setLoading(true);
+>>>>>>> 489e60b547d4adad56440a87128a90793996b40a
     setError(null);
     const { error } = await supabase
       .from('products')
@@ -102,6 +119,10 @@ export function useItems() {
         },
       }))
     );
+<<<<<<< HEAD
+=======
+    setLoading(false);
+>>>>>>> 489e60b547d4adad56440a87128a90793996b40a
   }, []);
 
 
