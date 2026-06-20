@@ -7,6 +7,7 @@ import { supabase } from '../supabaseClient.js';
 export function useItems() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch items from Supabase on mount
@@ -43,7 +44,7 @@ export function useItems() {
 
   // Update item in Supabase
   const updateItem = useCallback(async (id: string, updates: Partial<Item>): Promise<boolean> => {
-    setLoading(true);
+    setSaving(true);
     setError(null);
     const { error } = await supabase
       .from('products')
@@ -57,7 +58,7 @@ export function useItems() {
       .eq('id', id);
     if (error) {
       setError('Failed to update item.');
-      setLoading(false);
+      setSaving(false);
       return false;
     }
     // Refetch items
@@ -76,14 +77,14 @@ export function useItems() {
         },
       }))
     );
-    setLoading(false);
+    setSaving(false);
     return true;
   }, []);
 
 
   // Delete item in Supabase
   const deleteItem = useCallback(async (id: string) => {
-    setLoading(true);
+    setSaving(true);
     setError(null);
     const { error } = await supabase
       .from('products')
@@ -106,13 +107,13 @@ export function useItems() {
         },
       }))
     );
-    setLoading(false);
+    setSaving(false);
   }, []);
 
 
   // Add item to Supabase
   const addItem = useCallback(async (newItem: Omit<Item, 'id'> & { id?: string }) => {
-    setLoading(true);
+    setSaving(true);
     setError(null);
     // Insert id if present, otherwise let Supabase autogenerate
     const insertObj: any = {
@@ -143,7 +144,7 @@ export function useItems() {
         },
       }))
     );
-    setLoading(false);
+    setSaving(false);
   }, []);
 
 
@@ -158,6 +159,7 @@ export function useItems() {
     resetToDefault,
     setItems,
     loading,
+    saving,
     error,
   };
 }

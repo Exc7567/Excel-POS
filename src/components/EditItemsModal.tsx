@@ -51,10 +51,15 @@ export function EditItemsModal({
     });
   }, [items, search, categoryFilter]);
 
-  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / ITEMS_PER_PAGE));
+  // Clamp currentPage if items were deleted and we're past the last page
+  const safePage = Math.min(currentPage, totalPages);
+  if (safePage !== currentPage) {
+    setCurrentPage(safePage);
+  }
   const paginatedItems = filteredItems.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    (safePage - 1) * ITEMS_PER_PAGE,
+    safePage * ITEMS_PER_PAGE
   );
 
   const startEdit = (item: Item) => {
@@ -79,18 +84,19 @@ export function EditItemsModal({
       },
     });
 
-    // Show success toast — stay on edit screen
+    // Show success toast — stay on edit screen, close current row so user can edit next item
     const success = result instanceof Promise ? await result : true;
     if (success !== false) {
+      setEditingId(null); // Close this row so user can immediately edit the next item
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
       setToastMessage('✅ Item berhasil disimpan!');
       toastTimerRef.current = setTimeout(() => setToastMessage(null), 2000);
     } else {
+      // Keep editing open on failure so user can retry
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
       setToastMessage('❌ Gagal menyimpan item.');
       toastTimerRef.current = setTimeout(() => setToastMessage(null), 3000);
     }
-    // Do NOT setEditingId(null) — keep user on the edit screen
   };
 
   const cancelEdit = () => {
