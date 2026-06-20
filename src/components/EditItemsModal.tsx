@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import type { Item } from '../types';
 
 interface EditItemsModalProps {
   items: Item[];
-  onUpdateItem: (id: string, updates: Partial<Item>) => void;
+  onUpdateItem: (id: string, updates: Partial<Item>) => Promise<boolean> | void;
   onDeleteItem: (id: string) => void;
 }
 
@@ -25,6 +25,15 @@ export function EditItemsModal({
     grosir: 0,
     eceran: 0,
   });
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-dismiss toast after 2 seconds
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
 
   const categories = useMemo(() => {
     const cats = items.map((item) => item.category).filter(Boolean) as string[];
@@ -59,8 +68,8 @@ export function EditItemsModal({
     });
   };
 
-  const saveEdit = (id: string) => {
-    onUpdateItem(id, {
+  const saveEdit = async (id: string) => {
+    const result = onUpdateItem(id, {
       name: editForm.name,
       category: editForm.category,
       prices: {
@@ -69,7 +78,19 @@ export function EditItemsModal({
         eceran: editForm.eceran,
       },
     });
-    setEditingId(null);
+
+    // Show success toast — stay on edit screen
+    const success = result instanceof Promise ? await result : true;
+    if (success !== false) {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      setToastMessage('✅ Item berhasil disimpan!');
+      toastTimerRef.current = setTimeout(() => setToastMessage(null), 2000);
+    } else {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      setToastMessage('❌ Gagal menyimpan item.');
+      toastTimerRef.current = setTimeout(() => setToastMessage(null), 3000);
+    }
+    // Do NOT setEditingId(null) — keep user on the edit screen
   };
 
   const cancelEdit = () => {
@@ -287,6 +308,22 @@ export function EditItemsModal({
 
         </div>
       </div>
+
+      {/* Toast notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-gray-900 text-white rounded-xl shadow-2xl text-sm font-medium"
+          style={{ animation: 'fadeInUp 0.3s ease-out' }}
+        >
+          {toastMessage}
+        </div>
+      )}
+
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translate(-50%, 10px); }
+          to { opacity: 1; transform: translate(-50%, 0); }
+        }
+      `}</style>
     </div>
   );
 }

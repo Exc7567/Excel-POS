@@ -80,12 +80,14 @@ function centerText(text: string): string {
 
 export interface ReceiptData {
   storeName: string;
+  storeAddress?: string;
+  storePhone?: string;
   items: CartItem[];
   total: number;
 }
 
 export function generateReceipt(data: ReceiptData): Uint8Array {
-  const { storeName, items, total } = data;
+  const { storeName, storeAddress, storePhone, items, total } = data;
   const now = new Date();
   const dateStr = now.toLocaleDateString("id-ID");
   const timeStr = now.toLocaleTimeString("id-ID", {
@@ -101,13 +103,23 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
     DOUBLE_SIZE_ON,
     textToBytes(centerText(storeName)),
     NORMAL_SIZE,
+  ];
+
+  if (storeAddress) {
+    parts.push(textToBytes(centerText(storeAddress)));
+  }
+  if (storePhone) {
+    parts.push(textToBytes(centerText(`Phone: ${storePhone}`)));
+  }
+
+  parts.push(
     textToBytes(createLine("=")),
     BOLD_OFF,
     ALIGN_LEFT,
     textToBytes(`Tanggal: ${dateStr}  Jam: ${timeStr}\n`),
     FEED_LINE,
     textToBytes(createLine("-")),
-  ];
+  );
 
   // Add items
   for (const item of items) {
@@ -135,7 +147,6 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
     FEED_LINE,
     ALIGN_CENTER,
     textToBytes(centerText("Terima kasih!")),
-    textToBytes(centerText("Semoga hari Anda menyenangkan")),
     FEED_LINES(4),
     PARTIAL_CUT,
   );
@@ -155,7 +166,7 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
 
 // Plain text receipt for preview
 export function generateReceiptText(data: ReceiptData): string {
-  const { storeName, items, total } = data;
+  const { storeName, storeAddress, storePhone, items, total } = data;
   const now = new Date();
   const dateStr = now.toLocaleDateString("id-ID");
   const timeStr = now.toLocaleTimeString("id-ID", {
@@ -166,6 +177,12 @@ export function generateReceiptText(data: ReceiptData): string {
   let text = "";
   text += createLine("=");
   text += centerText(storeName);
+  if (storeAddress) {
+    text += centerText(storeAddress);
+  }
+  if (storePhone) {
+    text += centerText(`Phone: ${storePhone}`);
+  }
   text += createLine("=");
   text += `Tanggal: ${dateStr}  Jam: ${timeStr}\n`;
   text += "\n";
@@ -186,7 +203,62 @@ export function generateReceiptText(data: ReceiptData): string {
   text += createLine("=");
   text += "\n";
   text += centerText("Terima kasih!");
-  text += centerText("Semoga hari Anda menyenangkan");
 
   return text;
+}
+
+// HTML receipt for print preview (works with proportional fonts)
+export function generateReceiptHTML(data: ReceiptData): string {
+  const { storeName, storeAddress, storePhone, items, total } = data;
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("id-ID");
+  const timeStr = now.toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const sep = (char: string) =>
+    `<div class="separator">${char.repeat(60)}</div>`;
+
+  let html = "";
+
+  // Header
+  html += sep("=");
+  html += `<div class="center bold store-name">${storeName}</div>`;
+  if (storeAddress) {
+    html += `<div class="center store-info">${storeAddress}</div>`;
+  }
+  if (storePhone) {
+    html += `<div class="center store-info">Phone: ${storePhone}</div>`;
+  }
+  html += sep("=");
+
+  // Date/time
+  html += `<div class="date-line">Tanggal: ${dateStr} &nbsp; Jam: ${timeStr}</div>`;
+  html += sep("-");
+
+  // Items
+  for (const item of items) {
+    const price = item.prices[item.priceType];
+    const totalPrice = formatPrice(price * item.quantity);
+    html += `<div class="item-row">`;
+    html += `<span class="item-name">${item.name}</span>`;
+    html += `<span class="item-detail">x${item.quantity}</span>`;
+    html += `<span class="item-price">${totalPrice}</span>`;
+    html += `</div>`;
+  }
+
+  // Total
+  html += sep("-");
+  html += sep("=");
+  html += `<div class="total-row">`;
+  html += `<span class="total-label">TOTAL:</span>`;
+  html += `<span class="total-value">${formatPrice(total)}</span>`;
+  html += `</div>`;
+  html += sep("=");
+
+  // Footer
+  html += `<div class="center footer">Terima kasih!</div>`;
+
+  return html;
 }

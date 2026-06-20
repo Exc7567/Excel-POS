@@ -11,12 +11,14 @@ import { EditItemsModal } from "./components/EditItemsModal";
 import { useCart } from "./hooks/useCart";
 import { useItems } from "./hooks/useItems";
 import { useTransactions } from "./hooks/useTransactions";
-import { generateReceiptText } from "./utils/escpos";
+import { generateReceiptHTML } from "./utils/escpos";
 import { generateTransactionId } from "./types/transaction";
 import type { Item, PriceType } from "./types";
 import type { Transaction } from "./types/transaction";
 
-const STORE_NAME = "Sumber Kasih POS System";
+const STORE_NAME = "SUMBER KASIH";
+const STORE_ADDRESS = "JL. Trunojoyo 33 - Madiun";
+const STORE_PHONE = "08123447633";
 const CART_WIDTH = 384;
 
 function App() {
@@ -28,7 +30,7 @@ function App() {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
   const cart = useCart();
-  const { items, updateItem, setItems, deleteItem } = useItems();
+  const { items, updateItem, deleteItem, addItem, loading: itemsLoading, error: itemsError } = useItems();
   const { transactions, addTransaction, stats, exportToCSV, clearAll } = useTransactions();
 
   // Legacy edit states removed
@@ -37,8 +39,18 @@ function App() {
     cart.addItem(item, priceType);
   };
 
-  const handleImport = (importedItems: Item[]) => {
-    setItems(importedItems);
+
+
+  // Import: Add or update all imported items in Supabase
+  const handleImport = async (importedItems: Item[]) => {
+    for (const item of importedItems) {
+      const exists = items.some(existing => String(existing.id) === String(item.id));
+      if (exists) {
+        await updateItem(item.id, item);
+      } else {
+        await addItem(item);
+      }
+    }
   };
 
   const handlePrint = () => {
@@ -58,33 +70,100 @@ function App() {
 
     const receiptData = {
       storeName: STORE_NAME,
+      storeAddress: STORE_ADDRESS,
+      storePhone: STORE_PHONE,
       items: cart.items,
       total: cart.total,
     };
 
-    const text = generateReceiptText(receiptData);
-    // console.log(text);
+    const receiptHTML = generateReceiptHTML(receiptData);
 
-    const printWindow = window.open("", "_blank", "width=400,height=600");
+    const printWindow = window.open("", "_blank", "width=1000,height=600");
     if (printWindow) {
       printWindow.document.write(`
         <html>
           <head>
             <title>Struk</title>
             <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
               body {
-                font-family: 'Courier New', monospace;
-                font-size: 12px;
+                font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+                font-size: 14px;
                 padding: 20px;
-                white-space: pre;
-                line-height: 1.4;
+                line-height: 1.5;
+                max-width: 320px;
+                margin: 0 auto;
+              }
+              .separator {
+                overflow: hidden;
+                white-space: nowrap;
+                font-size: 14px;
+                line-height: 1.3;
+                color: #333;
+                letter-spacing: -0.5px;
+              }
+              .center { text-align: center; }
+              .bold { font-weight: bold; }
+              .store-name {
+                font-size: 18px;
+                padding: 4px 0;
+                letter-spacing: 1px;
+              }
+              .store-info {
+                font-size: 13px;
+                color: #444;
+                padding: 1px 0;
+              }
+              .date-line {
+                padding: 6px 0;
+                font-size: 13px;
+              }
+              .item-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                padding: 3px 0;
+                gap: 8px;
+              }
+              .item-name {
+                flex: 1;
+                word-break: break-word;
+              }
+              .item-detail {
+                flex-shrink: 0;
+                text-align: center;
+                min-width: 30px;
+                color: #555;
+              }
+              .item-price {
+                flex-shrink: 0;
+                text-align: right;
+                min-width: 70px;
+                font-variant-numeric: tabular-nums;
+              }
+              .total-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                padding: 4px 0;
+                font-weight: bold;
+                font-size: 16px;
+              }
+              .total-label { }
+              .total-value {
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+              }
+              .footer {
+                padding: 12px 0 4px;
+                font-size: 14px;
               }
               @media print {
-                body { padding: 0; }
+                body { padding: 0; max-width: none; }
               }
             </style>
           </head>
-          <body>${text}</body>
+          <body>${receiptHTML}</body>
         </html>
       `);
       printWindow.document.close();
@@ -188,7 +267,13 @@ function App() {
       />
 
       <div className={`flex-1 flex flex-col h-full overflow-hidden transition-all duration-300 ml-0 ${sidebarExpanded ? 'lg:ml-64' : 'lg:ml-16'}`}>
-        {renderContent()}
+        {itemsLoading ? (
+          <div className="flex-1 flex items-center justify-center text-gray-500">Loading items...</div>
+        ) : itemsError ? (
+          <div className="flex-1 flex items-center justify-center text-red-500">{itemsError}</div>
+        ) : (
+          renderContent()
+        )}
       </div>
 
       {/* Transaction Detail Modal (Still a popup) */}
