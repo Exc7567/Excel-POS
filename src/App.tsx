@@ -18,7 +18,6 @@ import type { Transaction } from "./types/transaction";
 
 const STORE_NAME = "SUMBER KASIH";
 const STORE_ADDRESS = "JL. Trunojoyo 33 - Madiun";
-const STORE_PHONE = "08123447633";
 const CART_WIDTH = 384;
 
 function App() {
