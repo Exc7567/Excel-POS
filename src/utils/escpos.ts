@@ -218,7 +218,7 @@ export function generateReceiptHTML(data: ReceiptData): string {
   });
 
   const sep = (char: string) =>
-    `<div class="separator">${char.repeat(60)}</div>`;
+    `<div class="separator">${char.repeat(200)}</div>`;
 
   let html = "";
 

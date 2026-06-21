@@ -71,7 +71,6 @@ function App() {
     const receiptData = {
       storeName: STORE_NAME,
       storeAddress: STORE_ADDRESS,
-      storePhone: STORE_PHONE,
       items: cart.items,
       total: cart.total,
     };
@@ -88,7 +87,7 @@ function App() {
               * { margin: 0; padding: 0; box-sizing: border-box; }
               body {
                 font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
-                font-size: 9px;
+                font-size: 11px;
                 padding: 20px;
                 line-height: 1.5;
                 max-width: 320px;
@@ -97,7 +96,7 @@ function App() {
               .separator {
                 overflow: hidden;
                 white-space: nowrap;
-                font-size: 9px;
+                font-size: 11px;
                 line-height: 1.3;
                 color: #333;
                 letter-spacing: -0.5px;
@@ -158,8 +157,9 @@ function App() {
                 padding: 12px 0 4px;
                 font-size: 11px;
               }
+              @page { margin: 0; }
               @media print {
-                body { padding: 0; max-width: none; }
+                body { padding: 1mm; margin: 0; max-width: none; width: 100%; }
               }
             </style>
           </head>
