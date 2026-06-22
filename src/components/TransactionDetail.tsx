@@ -5,9 +5,10 @@ import type { Transaction } from '../types/transaction';
 interface TransactionDetailProps {
   transaction: Transaction;
   onClose: () => void;
+  onCetakUlang: (transaction: Transaction) => void;
 }
 
-export function TransactionDetail({ transaction, onClose }: TransactionDetailProps) {
+export function TransactionDetail({ transaction, onClose, onCetakUlang }: TransactionDetailProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -99,7 +100,7 @@ export function TransactionDetail({ transaction, onClose }: TransactionDetailPro
 
         <div className="px-6 py-4 border-t border-gray-200 flex gap-3">
           <button
-            onClick={() => window.print()}
+            onClick={() => onCetakUlang(transaction)}
             className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
           >
             Cetak Ulang

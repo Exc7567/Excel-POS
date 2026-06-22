@@ -40,6 +40,16 @@ export function useTransactions() {
     });
   }, []);
 
+  const updateTransaction = useCallback((transaction: Transaction) => {
+    setTransactions((prev) => {
+      const updated = prev.map((t) =>
+        t.id === transaction.id ? { ...transaction } : t
+      );
+      saveTransactions(updated);
+      return updated;
+    });
+  }, []);
+
   const getTransaction = useCallback(
     (id: string): Transaction | undefined => {
       return transactions.find((t) => t.id === id);
@@ -159,6 +169,7 @@ export function useTransactions() {
   return {
     transactions,
     addTransaction,
+    updateTransaction,
     getTransaction,
     filterTransactions,
     getTodayTransactions,

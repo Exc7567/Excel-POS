@@ -3,6 +3,7 @@ import type { Item, CartItem, PriceType } from '../types';
 
 export function useCart() {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [reprintTransactionId, setReprintTransactionId] = useState<string | null>(null);
 
   const addItem = useCallback((item: Item, priceType: PriceType) => {
     const price = item.prices[priceType];
@@ -37,6 +38,17 @@ export function useCart() {
 
   const clearCart = useCallback(() => {
     setItems([]);
+    setReprintTransactionId(null);
+  }, []);
+
+  // Bulk-load items from a past transaction into the cart and tag with the original transaction ID
+  const setCartItems = useCallback((newItems: CartItem[], transactionId: string) => {
+    setItems(newItems.map(item => ({ ...item })));
+    setReprintTransactionId(transactionId);
+  }, []);
+
+  const clearReprintId = useCallback(() => {
+    setReprintTransactionId(null);
   }, []);
 
   const subtotal = items.reduce((sum, item) => {
@@ -52,8 +64,12 @@ export function useCart() {
     removeItem,
     updateQuantity,
     clearCart,
+    setCartItems,
+    reprintTransactionId,
+    clearReprintId,
     subtotal,
     total,
     itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
   };
 }
+

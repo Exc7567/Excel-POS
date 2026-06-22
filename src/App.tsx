@@ -30,7 +30,7 @@ function App() {
 
   const cart = useCart();
   const { items, updateItem, deleteItem, addItem, loading: itemsLoading, error: itemsError } = useItems();
-  const { transactions, addTransaction, stats, exportToCSV, clearAll } = useTransactions();
+  const { transactions, addTransaction, updateTransaction, stats, exportToCSV, clearAll } = useTransactions();
 
   // Legacy edit states removed
 
@@ -56,8 +56,10 @@ function App() {
     // ... same printing logic ...
     if (cart.items.length === 0) return;
 
+    const isReprint = !!cart.reprintTransactionId;
+
     const transaction: Transaction = {
-      id: generateTransactionId(),
+      id: isReprint ? cart.reprintTransactionId! : generateTransactionId(),
       items: [...cart.items],
       subtotal: cart.subtotal,
       total: cart.total,
@@ -65,7 +67,12 @@ function App() {
       timestamp: new Date(),
     };
 
-    addTransaction(transaction);
+    if (isReprint) {
+      updateTransaction(transaction);
+      cart.clearReprintId();
+    } else {
+      addTransaction(transaction);
+    }
 
     const receiptData = {
       storeName: STORE_NAME,
@@ -169,6 +176,25 @@ function App() {
       printWindow.print();
       cart.clearCart();
     }
+  };
+
+  const handleCetakUlang = (transaction: Transaction) => {
+    if (cart.items.length > 0) {
+      const confirmed = window.confirm(
+        'Keranjang Anda saat ini berisi item. Ganti dengan item dari transaksi ini?'
+      );
+      if (!confirmed) return;
+    }
+
+    // Load items from the transaction into the cart
+    cart.setCartItems(transaction.items, transaction.id);
+
+    // Set the price type to match the transaction
+    setPriceType(transaction.priceType);
+
+    // Close the modal and navigate to POS
+    setSelectedTransaction(null);
+    setActiveTab('pos');
   };
 
   const renderContent = () => {
@@ -280,6 +306,7 @@ function App() {
         <TransactionDetail
           transaction={selectedTransaction}
           onClose={() => setSelectedTransaction(null)}
+          onCetakUlang={handleCetakUlang}
         />
       )}
     </div>
