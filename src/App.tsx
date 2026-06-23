@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { PaymentModal } from "./components/PaymentModal";
 import { Header } from "./components/Header";
 import { ItemGridWithSearch } from "./components/ItemGrid";
 import { Cart } from "./components/Cart";
@@ -27,6 +28,7 @@ function App() {
   const [priceType, setPriceType] = useState<PriceType>("grosir");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const cart = useCart();
   const { items, updateItem, deleteItem, addItem, loading: itemsLoading, error: itemsError } = useItems();
@@ -53,8 +55,12 @@ function App() {
   };
 
   const handlePrint = () => {
-    // ... same printing logic ...
     if (cart.items.length === 0) return;
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentConfirm = (uangDibayar: number, kembalian: number) => {
+    setShowPaymentModal(false);
 
     const isReprint = !!cart.reprintTransactionId;
 
@@ -65,6 +71,8 @@ function App() {
       total: cart.total,
       priceType,
       timestamp: new Date(),
+      uangDibayar,
+      kembalian,
     };
 
     if (isReprint) {
@@ -79,6 +87,8 @@ function App() {
       storeAddress: STORE_ADDRESS,
       items: cart.items,
       total: cart.total,
+      uangDibayar,
+      kembalian,
     };
 
     const receiptHTML = generateReceiptHTML(receiptData);
@@ -156,6 +166,18 @@ function App() {
               }
               .total-label { }
               .total-value {
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+              }
+              .payment-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                padding: 2px 0;
+                font-size: 14px;
+              }
+              .payment-label { }
+              .payment-value {
                 text-align: right;
                 font-variant-numeric: tabular-nums;
               }
@@ -300,6 +322,15 @@ function App() {
           renderContent()
         )}
       </div>
+
+      {/* Payment Modal */}
+      {showPaymentModal && (
+        <PaymentModal
+          total={cart.total}
+          onConfirm={handlePaymentConfirm}
+          onCancel={() => setShowPaymentModal(false)}
+        />
+      )}
 
       {/* Transaction Detail Modal (Still a popup) */}
       {selectedTransaction && (

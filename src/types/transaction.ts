@@ -8,6 +8,8 @@ export interface Transaction {
   priceType: PriceType;
   timestamp: Date;
   paymentMethod?: string;
+  uangDibayar?: number;
+  kembalian?: number;
 }
 
 export interface TransactionSummary {

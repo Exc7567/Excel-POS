@@ -84,6 +84,8 @@ export interface ReceiptData {
   storePhone?: string;
   items: CartItem[];
   total: number;
+  uangDibayar?: number;
+  kembalian?: number;
 }
 
 export function generateReceipt(data: ReceiptData): Uint8Array {
@@ -142,8 +144,21 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
     DOUBLE_HEIGHT_ON,
     textToBytes(formatTotalLine("TOTAL:", formatPrice(total))),
     NORMAL_SIZE,
-    BOLD_OFF,
+  );
+
+  // Payment info (BAYAR / KEMBALIAN)
+  if (data.uangDibayar !== undefined) {
+    parts.push(
+      BOLD_ON,
+      textToBytes(formatTotalLine("BAYAR:", formatPrice(data.uangDibayar))),
+      textToBytes(formatTotalLine("KEMBALIAN:", formatPrice(data.kembalian ?? 0))),
+      BOLD_OFF,
+    );
+  }
+
+  parts.push(
     textToBytes(createLine("=")),
+    BOLD_OFF,
     FEED_LINE,
     ALIGN_CENTER,
     textToBytes(centerText("Terima kasih!")),
@@ -200,6 +215,13 @@ export function generateReceiptText(data: ReceiptData): string {
   text += createLine("-");
   text += createLine("=");
   text += formatTotalLine("TOTAL:", formatPrice(total));
+
+  // Payment info (BAYAR / KEMBALIAN)
+  if (data.uangDibayar !== undefined) {
+    text += formatTotalLine("BAYAR:", formatPrice(data.uangDibayar));
+    text += formatTotalLine("KEMBALIAN:", formatPrice(data.kembalian ?? 0));
+  }
+
   text += createLine("=");
   text += "\n";
   text += centerText("Terima kasih!");
@@ -255,6 +277,19 @@ export function generateReceiptHTML(data: ReceiptData): string {
   html += `<span class="total-label">TOTAL:</span>`;
   html += `<span class="total-value">${formatPrice(total)}</span>`;
   html += `</div>`;
+
+  // Payment info (BAYAR / KEMBALIAN)
+  if (data.uangDibayar !== undefined) {
+    html += `<div class="payment-row">`;
+    html += `<span class="payment-label">BAYAR:</span>`;
+    html += `<span class="payment-value">${formatPrice(data.uangDibayar)}</span>`;
+    html += `</div>`;
+    html += `<div class="payment-row">`;
+    html += `<span class="payment-label">KEMBALIAN:</span>`;
+    html += `<span class="payment-value">${formatPrice(data.kembalian ?? 0)}</span>`;
+    html += `</div>`;
+  }
+
   html += sep("=");
 
   // Footer

@@ -60,7 +60,7 @@ export function CartItemRow({ item, onUpdateQuantity, onRemove }: CartItemRowPro
   return (
     <div className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-b-0">
       <div className="flex-1 min-w-0">
-        <div className="font-medium text-gray-900 truncate text-sm">{item.name}</div>
+        <div className="font-medium text-gray-900 text-sm" style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>{item.name}</div>
         <div className="text-xs text-gray-500">
           {formatCurrency(price)} ({PRICE_LABELS[item.priceType]})
         </div>
