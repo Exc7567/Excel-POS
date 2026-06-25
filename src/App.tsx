@@ -59,10 +59,11 @@ function App() {
     setShowPaymentModal(true);
   };
 
-  const handlePaymentConfirm = (uangDibayar: number, kembalian: number) => {
+  const handlePaymentConfirm = (uangDibayar: number, kembalian: number, hutang: number) => {
     setShowPaymentModal(false);
 
     const isReprint = !!cart.reprintTransactionId;
+    const status: 'Lunas' | 'Belum Lunas' = hutang > 0 ? 'Belum Lunas' : 'Lunas';
 
     const transaction: Transaction = {
       id: isReprint ? cart.reprintTransactionId! : generateTransactionId(),
@@ -73,6 +74,8 @@ function App() {
       timestamp: new Date(),
       uangDibayar,
       kembalian,
+      status,
+      hutang,
     };
 
     if (isReprint) {
@@ -89,6 +92,7 @@ function App() {
       total: cart.total,
       uangDibayar,
       kembalian,
+      hutang,
     };
 
     const receiptHTML = generateReceiptHTML(receiptData);

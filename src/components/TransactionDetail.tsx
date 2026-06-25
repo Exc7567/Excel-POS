@@ -90,10 +90,39 @@ export function TransactionDetail({ transaction, onClose, onCetakUlang }: Transa
             <span>{formatCurrency(transaction.subtotal)}</span>
           </div>
 
+          {transaction.uangDibayar !== undefined && (
+            <>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-gray-600">Bayar</span>
+                <span>{formatCurrency(transaction.uangDibayar)}</span>
+              </div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-gray-600">
+                  {(transaction.hutang ?? 0) > 0 ? 'Hutang' : 'Kembalian'}
+                </span>
+                <span className={(transaction.hutang ?? 0) > 0 ? 'text-orange-600 font-semibold' : ''}>
+                  {formatCurrency((transaction.hutang ?? 0) > 0 ? (transaction.hutang ?? 0) : (transaction.kembalian ?? 0))}
+                </span>
+              </div>
+            </>
+          )}
+
           <div className="flex justify-between items-center pt-4 border-t border-gray-200">
             <span className="text-lg font-semibold">Total</span>
             <span className="text-lg font-bold text-green-600">
               {formatCurrency(transaction.total)}
+            </span>
+          </div>
+
+          {/* Status Badge */}
+          <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+            <span className="text-gray-600">Status</span>
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${
+              (transaction.status ?? 'Lunas') === 'Lunas'
+                ? 'bg-green-100 text-green-700'
+                : 'bg-orange-100 text-orange-700'
+            }`}>
+              {transaction.status ?? 'Lunas'}
             </span>
           </div>
         </div>

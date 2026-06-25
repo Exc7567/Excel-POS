@@ -86,6 +86,7 @@ export interface ReceiptData {
   total: number;
   uangDibayar?: number;
   kembalian?: number;
+  hutang?: number;
 }
 
 export function generateReceipt(data: ReceiptData): Uint8Array {
@@ -146,12 +147,16 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
     NORMAL_SIZE,
   );
 
-  // Payment info (BAYAR / KEMBALIAN)
+  // Payment info (BAYAR / KEMBALIAN or HUTANG)
   if (data.uangDibayar !== undefined) {
+    const isHutang = (data.hutang ?? 0) > 0;
     parts.push(
       BOLD_ON,
       textToBytes(formatTotalLine("BAYAR:", formatPrice(data.uangDibayar))),
-      textToBytes(formatTotalLine("KEMBALIAN:", formatPrice(data.kembalian ?? 0))),
+      textToBytes(formatTotalLine(
+        isHutang ? "HUTANG:" : "KEMBALIAN:",
+        formatPrice(isHutang ? (data.hutang ?? 0) : (data.kembalian ?? 0))
+      )),
       BOLD_OFF,
     );
   }
@@ -216,10 +221,14 @@ export function generateReceiptText(data: ReceiptData): string {
   text += createLine("=");
   text += formatTotalLine("TOTAL:", formatPrice(total));
 
-  // Payment info (BAYAR / KEMBALIAN)
+  // Payment info (BAYAR / KEMBALIAN or HUTANG)
   if (data.uangDibayar !== undefined) {
+    const isHutang = (data.hutang ?? 0) > 0;
     text += formatTotalLine("BAYAR:", formatPrice(data.uangDibayar));
-    text += formatTotalLine("KEMBALIAN:", formatPrice(data.kembalian ?? 0));
+    text += formatTotalLine(
+      isHutang ? "HUTANG:" : "KEMBALIAN:",
+      formatPrice(isHutang ? (data.hutang ?? 0) : (data.kembalian ?? 0))
+    );
   }
 
   text += createLine("=");
@@ -278,15 +287,16 @@ export function generateReceiptHTML(data: ReceiptData): string {
   html += `<span class="total-value">${formatPrice(total)}</span>`;
   html += `</div>`;
 
-  // Payment info (BAYAR / KEMBALIAN)
+  // Payment info (BAYAR / KEMBALIAN or HUTANG)
   if (data.uangDibayar !== undefined) {
+    const isHutang = (data.hutang ?? 0) > 0;
     html += `<div class="payment-row">`;
     html += `<span class="payment-label">BAYAR:</span>`;
     html += `<span class="payment-value">${formatPrice(data.uangDibayar)}</span>`;
     html += `</div>`;
     html += `<div class="payment-row">`;
-    html += `<span class="payment-label">KEMBALIAN:</span>`;
-    html += `<span class="payment-value">${formatPrice(data.kembalian ?? 0)}</span>`;
+    html += `<span class="payment-label">${isHutang ? 'HUTANG:' : 'KEMBALIAN:'}</span>`;
+    html += `<span class="payment-value">${formatPrice(isHutang ? (data.hutang ?? 0) : (data.kembalian ?? 0))}</span>`;
     html += `</div>`;
   }
 

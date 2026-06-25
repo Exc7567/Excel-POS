@@ -10,6 +10,8 @@ export interface Transaction {
   paymentMethod?: string;
   uangDibayar?: number;
   kembalian?: number;
+  status?: 'Lunas' | 'Belum Lunas';
+  hutang?: number;
 }
 
 export interface TransactionSummary {

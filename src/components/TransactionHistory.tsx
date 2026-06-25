@@ -209,11 +209,13 @@ export function TransactionHistory({
                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Waktu</th>
                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Item</th>
                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-right">Total</th>
+                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {filteredTransactions.map((transaction) => {
                     const date = new Date(transaction.timestamp);
+                    const status = transaction.status ?? 'Lunas';
                     return (
                       <tr
                         key={transaction.id}
@@ -231,6 +233,15 @@ export function TransactionHistory({
                         </td>
                         <td className="px-6 py-4 text-right font-bold text-gray-900">
                           {formatCurrency(transaction.total)}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                            status === 'Lunas'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-orange-100 text-orange-700'
+                          }`}>
+                            {status}
+                          </span>
                         </td>
                       </tr>
                     );
