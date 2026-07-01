@@ -41,6 +41,7 @@ function padRight(str: string, length: number): string {
     : str + " ".repeat(length - str.length);
 }
 
+// @ts-ignore: Utility function kept for potential future use
 function padLeft(str: string, length: number): string {
   return str.length >= length
     ? str.substring(0, length)
@@ -55,16 +56,21 @@ function formatPrice(price: number): string {
   return new Intl.NumberFormat("id-ID").format(price);
 }
 
-function formatItemLine(name: string, qty: number, price: string): string {
-  const qtyStr = `x${qty}`;
-  const nameMaxLen = LINE_WIDTH - qtyStr.length - price.length - 2;
+function formatItemLines(name: string, qty: number, unitPrice: number): string {
+  const totalPrice = formatPrice(unitPrice * qty);
+  const totalPriceStr = `Rp ${totalPrice}`;
+  const nameMaxLen = LINE_WIDTH - totalPriceStr.length;
   const truncatedName =
     name.length > nameMaxLen ? name.substring(0, nameMaxLen) : name;
 
-  const leftPart = padRight(truncatedName, nameMaxLen);
-  const rightPart = padLeft(qtyStr + " " + price, LINE_WIDTH - nameMaxLen);
+  // Line 1: Item name (left) + Rp total_price (right)
+  const line1 = padRight(truncatedName, nameMaxLen) + totalPriceStr + "\n";
 
-  return leftPart + rightPart + "\n";
+  // Line 2: Indented qty x Rp unit_price
+  const calcStr = `  ${qty} x Rp ${formatPrice(unitPrice)}`;
+  const line2 = calcStr + "\n";
+
+  return line1 + line2 + "\n";
 }
 
 function formatTotalLine(label: string, value: string): string {
@@ -126,16 +132,23 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
 
   // Add items
   for (const item of items) {
-    const price = item.prices[item.priceType];
-    parts.push(
-      textToBytes(
-        formatItemLine(
-          item.name,
-          item.quantity,
-          formatPrice(price * item.quantity),
-        ),
-      ),
-    );
+    const unitPrice = item.prices[item.priceType];
+    // Line 1: item name + Rp total (normal size)
+    const totalPriceStr = `Rp ${formatPrice(unitPrice * item.quantity)}`;
+    const nameMaxLen = LINE_WIDTH - totalPriceStr.length;
+    const truncatedName =
+      item.name.length > nameMaxLen ? item.name.substring(0, nameMaxLen) : item.name;
+    const line1 = padRight(truncatedName, nameMaxLen) + totalPriceStr + "\n";
+    parts.push(textToBytes(line1));
+
+    // Line 2: qty x Rp unit_price (smaller font)
+    // GS ! 0x00 sets smallest font; we use a slightly smaller character size
+    // ESC M 1 selects Font B (smaller) on most ESC/POS printers
+    parts.push(new Uint8Array([ESC, 0x4d, 0x01])); // Select Font B (smaller)
+    const calcStr = `  ${item.quantity} x Rp ${formatPrice(unitPrice)}\n`;
+    parts.push(textToBytes(calcStr));
+    parts.push(new Uint8Array([ESC, 0x4d, 0x00])); // Revert to Font A (normal)
+    parts.push(FEED_LINE); // Gap between items
   }
 
   parts.push(
@@ -209,12 +222,8 @@ export function generateReceiptText(data: ReceiptData): string {
   text += createLine("-");
 
   for (const item of items) {
-    const price = item.prices[item.priceType];
-    text += formatItemLine(
-      item.name,
-      item.quantity,
-      formatPrice(price * item.quantity),
-    );
+    const unitPrice = item.prices[item.priceType];
+    text += formatItemLines(item.name, item.quantity, unitPrice);
   }
 
   text += createLine("-");
@@ -270,12 +279,15 @@ export function generateReceiptHTML(data: ReceiptData): string {
 
   // Items
   for (const item of items) {
-    const price = item.prices[item.priceType];
-    const totalPrice = formatPrice(price * item.quantity);
+    const unitPrice = item.prices[item.priceType];
+    const totalPrice = formatPrice(unitPrice * item.quantity);
+    const unitPriceFormatted = formatPrice(unitPrice);
+    html += `<div class="item-block">`;
     html += `<div class="item-row">`;
     html += `<span class="item-name">${item.name}</span>`;
-    html += `<span class="item-detail">x${item.quantity}</span>`;
-    html += `<span class="item-price">${totalPrice}</span>`;
+    html += `<span class="item-price">Rp ${totalPrice}</span>`;
+    html += `</div>`;
+    html += `<div class="item-calc">${item.quantity} x Rp ${unitPriceFormatted}</div>`;
     html += `</div>`;
   }
 

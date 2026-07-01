@@ -137,22 +137,19 @@ function App() {
                 padding: 6px 0;
                 font-size: 13px;
               }
+              .item-block {
+                margin-bottom: 6px;
+              }
               .item-row {
                 display: flex;
                 justify-content: space-between;
                 align-items: baseline;
-                padding: 3px 0;
+                padding: 2px 0 0 0;
                 gap: 8px;
               }
               .item-name {
                 flex: 1;
                 word-break: break-word;
-              }
-              .item-detail {
-                flex-shrink: 0;
-                text-align: center;
-                min-width: 30px;
-                color: #555;
               }
               .item-price {
                 flex-shrink: 0;
@@ -160,13 +157,19 @@ function App() {
                 min-width: 70px;
                 font-variant-numeric: tabular-nums;
               }
+              .item-calc {
+                font-size: 9px;
+                color: #444;
+                padding-left: 8px;
+                padding-top: 1px;
+              }
               .total-row {
                 display: flex;
                 justify-content: space-between;
                 align-items: baseline;
                 padding: 4px 0;
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 14px;
               }
               .total-label { }
               .total-value {
@@ -178,7 +181,7 @@ function App() {
                 justify-content: space-between;
                 align-items: baseline;
                 padding: 2px 0;
-                font-size: 14px;
+                font-size: 12px;
               }
               .payment-label { }
               .payment-value {

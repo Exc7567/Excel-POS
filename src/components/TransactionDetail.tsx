@@ -117,11 +117,10 @@ export function TransactionDetail({ transaction, onClose, onCetakUlang }: Transa
           {/* Status Badge */}
           <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
             <span className="text-gray-600">Status</span>
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${
-              (transaction.status ?? 'Lunas') === 'Lunas'
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${(transaction.status ?? 'Lunas') === 'Lunas'
                 ? 'bg-green-100 text-green-700'
                 : 'bg-orange-100 text-orange-700'
-            }`}>
+              }`}>
               {transaction.status ?? 'Lunas'}
             </span>
           </div>
