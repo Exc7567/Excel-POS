@@ -12,7 +12,7 @@ interface TransactionHistoryProps {
     averageTransaction: number;
     totalItems: number;
   };
-  onExportCSV: () => void;
+  onExportJSON: (filteredTransactions: Transaction[], periodLabel: string) => void;
   onClearAll: () => void;
 }
 
@@ -22,7 +22,7 @@ export function TransactionHistory({
   transactions,
   onSelectTransaction,
   stats,
-  onExportCSV,
+  onExportJSON,
   onClearAll,
 }: TransactionHistoryProps) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -94,6 +94,14 @@ export function TransactionHistory({
     return filtered;
   }, [transactions, period, customStart, customEnd, searchQuery]);
 
+  const periodLabelMap: Record<PeriodFilter, string> = {
+    today: 'hari-ini',
+    week: '7hari',
+    month: '30hari',
+    all: 'semua',
+    custom: `custom-${customStart || 'awal'}-${customEnd || 'akhir'}`,
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -110,10 +118,10 @@ export function TransactionHistory({
         <h2 className="text-lg sm:text-xl font-bold text-gray-900 pl-12 lg:pl-0">Riwayat Transaksi</h2>
         <div className="flex gap-2">
           <button
-            onClick={onExportCSV}
+            onClick={() => onExportJSON(filteredTransactions, periodLabelMap[period])}
             className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center gap-2"
           >
-            📂 Export CSV
+            📂 Export JSON
           </button>
         </div>
       </div>

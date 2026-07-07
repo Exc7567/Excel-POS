@@ -32,7 +32,7 @@ function App() {
 
   const cart = useCart();
   const { items, updateItem, deleteItem, addItem, loading: itemsLoading, error: itemsError } = useItems();
-  const { transactions, addTransaction, updateTransaction, stats, exportToCSV, clearAll } = useTransactions();
+  const { transactions, addTransaction, updateTransaction, stats, clearAll } = useTransactions();
 
   // Legacy edit states removed
 
@@ -269,14 +269,52 @@ function App() {
             transactions={transactions}
             onSelectTransaction={setSelectedTransaction}
             stats={stats}
-            onExportCSV={() => {
-              const csv = exportToCSV();
-              const blob = new Blob([csv], { type: 'text/csv' });
+            onExportJSON={(filteredTransactions, periodLabel) => {
+              const priceTypeLabel = (pt: string) => {
+                switch (pt) {
+                  case 'grosir': return 'Grosir';
+                  case 'eceran': return 'Eceran';
+                  case 'net': return 'Net';
+                  default: return pt;
+                }
+              };
+
+              const exportData = filteredTransactions.map((t) => {
+                const ts = new Date(t.timestamp);
+                const pad = (n: number) => n.toString().padStart(2, '0');
+                const isoLocal = `${ts.getFullYear()}-${pad(ts.getMonth() + 1)}-${pad(ts.getDate())}T${pad(ts.getHours())}:${pad(ts.getMinutes())}:${pad(ts.getSeconds())}`;
+
+                return {
+                  id: t.id,
+                  tanggal_waktu: isoLocal,
+                  tipe_harga: priceTypeLabel(t.priceType),
+                  items: t.items.map((item) => {
+                    const hargaSatuan = item.prices[item.priceType] ?? 0;
+                    return {
+                      nama_item: item.name,
+                      kategori: item.category ?? '',
+                      qty: item.quantity,
+                      harga_satuan: hargaSatuan,
+                      subtotal: hargaSatuan * item.quantity,
+                    };
+                  }),
+                  subtotal: t.subtotal,
+                  total: t.total,
+                  bayar: t.uangDibayar ?? 0,
+                  kembalian: t.kembalian ?? 0,
+                  hutang: t.hutang ?? 0,
+                  status: t.status ?? 'Lunas',
+                };
+              });
+
+              const json = JSON.stringify(exportData, null, 2);
+              const blob = new Blob([json], { type: 'application/json' });
               const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = `transactions_${new Date().toISOString().slice(0, 10)}.csv`;
-              link.click();
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `sumber-kasih-riwayat-${periodLabel}-${new Date().toISOString().slice(0, 10)}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
             }}
             onClearAll={clearAll}
           />

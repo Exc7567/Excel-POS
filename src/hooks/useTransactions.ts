@@ -132,32 +132,6 @@ export function useTransactions() {
     };
   }, [transactions]);
 
-  const exportToCSV = useCallback((): string => {
-    const headers = [
-      'ID',
-      'Tanggal',
-      'Waktu',
-      'Tipe Harga',
-      'Item Count',
-      'Subtotal',
-      'Total',
-    ];
-
-    const rows = transactions.map((t) => {
-      const date = new Date(t.timestamp);
-      return [
-        t.id,
-        date.toLocaleDateString('id-ID'),
-        date.toLocaleTimeString('id-ID'),
-        t.priceType,
-        t.items.reduce((sum, i) => sum + i.quantity, 0),
-        t.subtotal,
-        t.total,
-      ];
-    });
-
-    return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-  }, [transactions]);
 
   const clearAll = useCallback(() => {
     if (confirm('Yakin ingin menghapus semua riwayat transaksi?')) {
@@ -176,7 +150,6 @@ export function useTransactions() {
     getWeekTransactions,
     getMonthTransactions,
     stats,
-    exportToCSV,
     clearAll,
   };
 }
