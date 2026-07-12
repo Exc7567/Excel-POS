@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import type { Transaction, TransactionFilter } from '../types/transaction';
 import { getActualRevenue } from '../utils/revenueHelper';
+import { roundItemQty } from '../utils/roundItemQty';
 
 const TRANSACTIONS_KEY = 'pos_transactions';
 
@@ -121,7 +122,7 @@ export function useTransactions() {
     const averageTransaction =
       totalCount > 0 ? totalRevenue / totalCount : 0;
     const totalItems = transactions.reduce(
-      (sum, t) => sum + t.items.reduce((s, i) => s + i.quantity, 0),
+      (sum, t) => sum + t.items.reduce((s, i) => s + roundItemQty(i.quantity), 0),
       0
     );
 

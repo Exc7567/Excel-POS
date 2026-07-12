@@ -3,6 +3,7 @@ import type { Transaction } from '../types/transaction';
 import { format, subDays, startOfDay, endOfDay, eachDayOfInterval } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { getActualRevenue } from '../utils/revenueHelper';
+import { roundItemQty } from '../utils/roundItemQty';
 
 export interface DailyData {
   date: string;
@@ -127,7 +128,7 @@ export function useReports(transactions: Transaction[]) {
 
   const totalItemsSold = useMemo(() => {
     return filteredTransactions.reduce(
-      (sum, t) => sum + t.items.reduce((s, i) => s + i.quantity, 0),
+      (sum, t) => sum + t.items.reduce((s, i) => s + roundItemQty(i.quantity), 0),
       0
     );
   }, [filteredTransactions]);
@@ -152,7 +153,7 @@ export function useReports(transactions: Transaction[]) {
       if (daily) {
         daily.revenue += getActualRevenue(t);
         daily.transactions += 1;
-        daily.itemsSold += t.items.reduce((sum, i) => sum + i.quantity, 0);
+        daily.itemsSold += t.items.reduce((sum, i) => sum + roundItemQty(i.quantity), 0);
       }
     });
 
@@ -165,7 +166,7 @@ export function useReports(transactions: Transaction[]) {
       t.items.forEach((item) => {
         const key = item.id;
         const existing = itemMap.get(key);
-        const quantity = item.quantity;
+        const quantity = roundItemQty(item.quantity);
         const price = item.prices[t.priceType];
         const revenue = price * quantity;
 
