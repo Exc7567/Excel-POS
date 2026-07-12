@@ -145,7 +145,7 @@ function App() {
                 justify-content: space-between;
                 align-items: baseline;
                 padding: 2px 0 0 0;
-                gap: 8px;
+                gap: 4px;
               }
               .item-name {
                 flex: 1;
@@ -157,8 +157,14 @@ function App() {
                 min-width: 70px;
                 font-variant-numeric: tabular-nums;
               }
+              .item-qty {
+                flex-shrink: 0;
+                text-align: center;
+                min-width: 16px;
+                padding: 0 2px;
+                font-variant-numeric: tabular-nums;
+              }
               .item-calc {
-                font-size: 9px;
                 color: #444;
                 padding-left: 8px;
                 padding-top: 1px;
@@ -167,7 +173,7 @@ function App() {
                 display: flex;
                 justify-content: space-between;
                 align-items: baseline;
-                padding: 4px 0;
+                padding: 1px 0;
                 font-weight: bold;
                 font-size: 14px;
               }
@@ -180,7 +186,7 @@ function App() {
                 display: flex;
                 justify-content: space-between;
                 align-items: baseline;
-                padding: 2px 0;
+                padding: 0;
                 font-size: 12px;
               }
               .payment-label { }
@@ -189,8 +195,16 @@ function App() {
                 font-variant-numeric: tabular-nums;
               }
               .footer {
-                padding: 12px 0 4px;
+                padding: 8px 0 4px;
                 font-size: 11px;
+              }
+              .bottom-section {
+                line-height: 1.1;
+              }
+              .bottom-section .separator {
+                line-height: 0.8;
+                margin: 0;
+                padding: 0;
               }
               @page { margin: 0; }
               @media print {

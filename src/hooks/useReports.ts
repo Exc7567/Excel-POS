@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { Transaction } from '../types/transaction';
 import { format, subDays, startOfDay, endOfDay, eachDayOfInterval } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { getActualRevenue } from '../utils/revenueHelper';
 
 export interface DailyData {
   date: string;
@@ -114,11 +115,11 @@ export function useReports(transactions: Transaction[]) {
         const timestamp = new Date(t.timestamp);
         return timestamp >= previousStart && timestamp <= previousEnd;
       })
-      .reduce((sum, t) => sum + t.total, 0);
+      .reduce((sum, t) => sum + getActualRevenue(t), 0);
   }, [transactions, start, end]);
 
   const totalRevenue = useMemo(() => {
-    return filteredTransactions.reduce((sum, t) => sum + t.total, 0);
+    return filteredTransactions.reduce((sum, t) => sum + getActualRevenue(t), 0);
   }, [filteredTransactions]);
 
   const totalTransactions = filteredTransactions.length;
@@ -149,7 +150,7 @@ export function useReports(transactions: Transaction[]) {
       const dateKey = format(new Date(t.timestamp), 'yyyy-MM-dd');
       const daily = dailyDataMap.get(dateKey);
       if (daily) {
-        daily.revenue += t.total;
+        daily.revenue += getActualRevenue(t);
         daily.transactions += 1;
         daily.itemsSold += t.items.reduce((sum, i) => sum + i.quantity, 0);
       }

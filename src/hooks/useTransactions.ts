@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import type { Transaction, TransactionFilter } from '../types/transaction';
+import { getActualRevenue } from '../utils/revenueHelper';
 
 const TRANSACTIONS_KEY = 'pos_transactions';
 
@@ -115,7 +116,7 @@ export function useTransactions() {
   }, [transactions]);
 
   const stats = useMemo(() => {
-    const totalRevenue = transactions.reduce((sum, t) => sum + t.total, 0);
+    const totalRevenue = transactions.reduce((sum, t) => sum + getActualRevenue(t), 0);
     const totalCount = transactions.length;
     const averageTransaction =
       totalCount > 0 ? totalRevenue / totalCount : 0;

@@ -41,8 +41,18 @@ export function Cart({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Calculate total items count for badge
-  const totalItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  // Round quantity for item count display:
+  // 0.1–0.9 → 1 (any sub-1 fractional counts as 1 item)
+  // ≥1: fractional ≤0.5 → floor, fractional >0.5 → ceil
+  const roundItemQty = (qty: number): number => {
+    if (qty <= 0) return 0;
+    if (qty < 1) return 1;
+    const frac = qty - Math.floor(qty);
+    return frac > 0.5 ? Math.ceil(qty) : Math.floor(qty);
+  };
+
+  // Calculate total items count for badge (rounded per item)
+  const totalItemsCount = items.reduce((sum, item) => sum + roundItemQty(item.quantity), 0);
 
   return (
     <>

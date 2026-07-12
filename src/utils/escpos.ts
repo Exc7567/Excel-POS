@@ -56,18 +56,29 @@ function formatPrice(price: number): string {
   return new Intl.NumberFormat("id-ID").format(price);
 }
 
+// Format quantity for receipt display: use comma as decimal separator (Indonesian convention)
+// Trim trailing zeros: 0.5 → "0,5", 1.25 → "1,25", 2 → "2"
+function formatQty(qty: number): string {
+  const rounded = Math.round(qty * 100) / 100;
+  return rounded.toString().replace('.', ',');
+}
+
 function formatItemLines(name: string, qty: number, unitPrice: number): string {
   const totalPrice = formatPrice(unitPrice * qty);
-  const totalPriceStr = `Rp ${totalPrice}`;
-  const nameMaxLen = LINE_WIDTH - totalPriceStr.length;
+  const qtyStr = formatQty(qty);
+  // Layout: [name] [qty] [totalPrice]  — all fitting in LINE_WIDTH
+  // Reserve space: 1 space before qty, qty width, 1 space after qty, totalPrice width
+  const totalPriceWidth = totalPrice.length;
+  const qtyWidth = Math.max(qtyStr.length, 2); // at least 2 chars for qty column
+  const nameMaxLen = LINE_WIDTH - totalPriceWidth - qtyWidth - 2; // 2 spaces as gaps
   const truncatedName =
     name.length > nameMaxLen ? name.substring(0, nameMaxLen) : name;
 
-  // Line 1: Item name (left) + Rp total_price (right)
-  const line1 = padRight(truncatedName, nameMaxLen) + totalPriceStr + "\n";
+  // Line 1: Item name (left) + qty (fixed column) + total price (right, no Rp)
+  const line1 = padRight(truncatedName, nameMaxLen) + " " + padLeft(qtyStr, qtyWidth) + " " + padLeft(totalPrice, totalPriceWidth) + "\n";
 
-  // Line 2: Indented qty x Rp unit_price
-  const calcStr = `  ${qty} x Rp ${formatPrice(unitPrice)}`;
+  // Line 2: @ unit_price (indented, smaller)
+  const calcStr = `  @ ${formatPrice(unitPrice)}`;
   const line2 = calcStr + "\n";
 
   return line1 + line2 + "\n";
@@ -133,21 +144,20 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
   // Add items
   for (const item of items) {
     const unitPrice = item.prices[item.priceType];
-    // Line 1: item name + Rp total (normal size)
-    const totalPriceStr = `Rp ${formatPrice(unitPrice * item.quantity)}`;
-    const nameMaxLen = LINE_WIDTH - totalPriceStr.length;
+    const totalPrice = formatPrice(unitPrice * item.quantity);
+    const qtyStr = formatQty(item.quantity);
+    // Layout: [name] [qty] [totalPrice] — fitting in LINE_WIDTH
+    const qtyWidth = Math.max(qtyStr.length, 2);
+    const totalPriceWidth = totalPrice.length;
+    const nameMaxLen = LINE_WIDTH - totalPriceWidth - qtyWidth - 2; // 2 spaces as gaps
     const truncatedName =
       item.name.length > nameMaxLen ? item.name.substring(0, nameMaxLen) : item.name;
-    const line1 = padRight(truncatedName, nameMaxLen) + totalPriceStr + "\n";
+    const line1 = padRight(truncatedName, nameMaxLen) + " " + padLeft(qtyStr, qtyWidth) + " " + padLeft(totalPrice, totalPriceWidth) + "\n";
     parts.push(textToBytes(line1));
 
-    // Line 2: qty x Rp unit_price (smaller font)
-    // GS ! 0x00 sets smallest font; we use a slightly smaller character size
-    // ESC M 1 selects Font B (smaller) on most ESC/POS printers
-    parts.push(new Uint8Array([ESC, 0x4d, 0x01])); // Select Font B (smaller)
-    const calcStr = `  ${item.quantity} x Rp ${formatPrice(unitPrice)}\n`;
+    // Line 2: @ unit_price (same font size as Row 1)
+    const calcStr = `  @ ${formatPrice(unitPrice)}\n`;
     parts.push(textToBytes(calcStr));
-    parts.push(new Uint8Array([ESC, 0x4d, 0x00])); // Revert to Font A (normal)
     parts.push(FEED_LINE); // Gap between items
   }
 
@@ -285,13 +295,15 @@ export function generateReceiptHTML(data: ReceiptData): string {
     html += `<div class="item-block">`;
     html += `<div class="item-row">`;
     html += `<span class="item-name">${item.name}</span>`;
-    html += `<span class="item-price">Rp ${totalPrice}</span>`;
+    html += `<span class="item-qty">${formatQty(item.quantity)}</span>`;
+    html += `<span class="item-price">${totalPrice}</span>`;
     html += `</div>`;
-    html += `<div class="item-calc">${item.quantity} x Rp ${unitPriceFormatted}</div>`;
+    html += `<div class="item-calc">@ ${unitPriceFormatted}</div>`;
     html += `</div>`;
   }
 
-  // Total
+  // Total — wrapped in bottom-section for tighter spacing
+  html += `<div class="bottom-section">`;
   html += sep("-");
   html += sep("=");
   html += `<div class="total-row">`;
@@ -313,6 +325,7 @@ export function generateReceiptHTML(data: ReceiptData): string {
   }
 
   html += sep("=");
+  html += `</div>`;
 
   // Footer
   html += `<div class="center footer">Terima kasih!</div>`;

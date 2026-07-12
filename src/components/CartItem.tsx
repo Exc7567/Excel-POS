@@ -17,13 +17,22 @@ const PRICE_LABELS: Record<PriceType, string> = {
 export function CartItemRow({ item, onUpdateQuantity, onRemove }: CartItemRowProps) {
   const price = item.prices[item.priceType];
 
+  // Format a quantity number for display using comma as decimal separator (Indonesian convention)
+  // Trim trailing zeros: 0.5 → "0,5" (not "0,50"), 1.25 → "1,25", 2 → "2"
+  const formatQtyDisplay = (qty: number): string => {
+    // Round to 2 decimal places to avoid floating point noise
+    const rounded = Math.round(qty * 100) / 100;
+    const str = rounded.toString();
+    return str.replace('.', ',');
+  };
+
   // Local input state allows the field to be temporarily empty while typing
   // without propagating 0/NaN to the cart state
-  const [inputValue, setInputValue] = useState<string>(String(item.quantity));
+  const [inputValue, setInputValue] = useState<string>(formatQtyDisplay(item.quantity));
 
   // Sync local input when item.quantity changes externally (e.g. +/− buttons)
   useEffect(() => {
-    setInputValue(String(item.quantity));
+    setInputValue(formatQtyDisplay(item.quantity));
   }, [item.quantity]);
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,25 +44,41 @@ export function CartItemRow({ item, onUpdateQuantity, onRemove }: CartItemRowPro
       return;
     }
 
-    // Strip non-digit characters (no decimals, no negatives, no letters)
-    const digitsOnly = raw.replace(/[^0-9]/g, '');
-    if (digitsOnly === '') {
-      setInputValue('');
+    // Normalize: replace comma with period for internal processing
+    const normalized = raw.replace(',', '.');
+
+    // Allow only digits, at most one decimal point, and up to 2 decimal places
+    // Also allow a trailing period (user is about to type decimal digits)
+    const match = normalized.match(/^(\d+)(\.(\d{0,2}))?$/);
+    if (!match) {
+      // Invalid input — don't update
       return;
     }
 
-    const parsed = parseInt(digitsOnly, 10);
-    const clamped = Math.max(1, parsed);
-    setInputValue(String(clamped));
-    onUpdateQuantity(item.id, item.priceType, clamped);
+    // Build the display value (using comma for display)
+    const displayValue = normalized.replace('.', ',');
+    setInputValue(displayValue);
+
+    // Parse and update cart state
+    const parsed = parseFloat(normalized);
+    if (!isNaN(parsed) && parsed > 0) {
+      const clamped = Math.max(0.01, Math.round(parsed * 100) / 100);
+      onUpdateQuantity(item.id, item.priceType, clamped);
+    }
   };
 
   const handleBlur = () => {
-    // If the field is empty or 0 when the user leaves, reset to 1
-    const parsed = parseInt(inputValue, 10);
-    if (!inputValue || isNaN(parsed) || parsed <= 0) {
+    // Normalize: replace comma with period for parsing
+    const normalized = inputValue.replace(',', '.');
+    const parsed = parseFloat(normalized);
+    if (!inputValue || isNaN(parsed) || parsed < 0.01) {
       setInputValue('1');
       onUpdateQuantity(item.id, item.priceType, 1);
+    } else {
+      // Ensure clean display on blur (remove trailing dots, etc.)
+      const clamped = Math.max(0.01, Math.round(parsed * 100) / 100);
+      setInputValue(formatQtyDisplay(clamped));
+      onUpdateQuantity(item.id, item.priceType, clamped);
     }
   };
 
@@ -75,11 +100,11 @@ export function CartItemRow({ item, onUpdateQuantity, onRemove }: CartItemRowPro
         </button>
         <input
           type="text"
-          inputMode="numeric"
+          inputMode="decimal"
           value={inputValue}
           onChange={handleQuantityChange}
           onBlur={handleBlur}
-          className="w-10 text-center font-medium text-sm bg-transparent border-none outline-none p-0 m-0"
+          className="w-14 text-center font-medium text-sm bg-transparent border-none outline-none p-0 m-0"
           style={{
             MozAppearance: 'textfield',
             WebkitAppearance: 'none',
