@@ -27,6 +27,10 @@ export const FEED_LINES = (n: number) => new Uint8Array([ESC, 0x64, n]);
 export const CUT_PAPER = new Uint8Array([GS, 0x56, 0x00]);
 export const PARTIAL_CUT = new Uint8Array([GS, 0x56, 0x01]);
 
+// Line spacing control
+export const LINE_SPACING_ZERO = new Uint8Array([ESC, 0x33, 0x00]); // Set line spacing to 0
+export const LINE_SPACING_DEFAULT = new Uint8Array([ESC, 0x32]); // Reset to default line spacing
+
 // Separator line (32 chars for 58mm, 48 chars for 80mm)
 const LINE_WIDTH = 32;
 
@@ -117,9 +121,11 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
 
   const parts: Uint8Array[] = [
     INIT,
+    LINE_SPACING_ZERO,
     ALIGN_CENTER,
     BOLD_ON,
     textToBytes(createLine("=")),
+    LINE_SPACING_DEFAULT,
     DOUBLE_SIZE_ON,
     textToBytes(centerText(storeName)),
     NORMAL_SIZE,

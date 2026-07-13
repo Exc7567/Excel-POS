@@ -108,7 +108,7 @@ function App() {
               body {
                 font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
                 font-size: 11px;
-                padding: 20px;
+                padding: 2px 20px 20px 20px;
                 line-height: 1.5;
                 max-width: 320px;
                 margin: 0 auto;
@@ -208,7 +208,7 @@ function App() {
               }
               @page { margin: 0; }
               @media print {
-                body { padding: 1mm; margin: 0; max-width: none; width: 100%; }
+                body { padding: 0 1mm 1mm 1mm; margin: 0; max-width: none; width: 100%; }
               }
             </style>
           </head>
