@@ -1,19 +1,17 @@
 import { useState, useMemo } from 'react';
 import type { Transaction } from '../types/transaction';
+import type { TransactionWithPending } from '../hooks/useTransactions';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { getActualRevenue } from '../utils/revenueHelper';
+import { roundItemQty } from '../utils/roundItemQty';
 
 interface TransactionHistoryProps {
   transactions: Transaction[];
   onSelectTransaction: (transaction: Transaction) => void;
-  stats: {
-    totalRevenue: number;
-    totalCount: number;
-    averageTransaction: number;
-    totalItems: number;
-  };
+  loading?: boolean;
   onExportJSON: (filteredTransactions: Transaction[], periodLabel: string) => void;
-  onClearAll: () => void;
+  onDeleteAll: () => Promise<{ success: boolean; error?: string }>;
 }
 
 type PeriodFilter = 'today' | 'week' | 'month' | 'all' | 'custom';
@@ -21,14 +19,20 @@ type PeriodFilter = 'today' | 'week' | 'month' | 'all' | 'custom';
 export function TransactionHistory({
   transactions,
   onSelectTransaction,
-  stats,
+  loading,
   onExportJSON,
-  onClearAll,
+  onDeleteAll,
 }: TransactionHistoryProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [period, setPeriod] = useState<PeriodFilter>('today');
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState('');
+
+  // CONFIRM_DELETE modal state
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deletingAll, setDeletingAll] = useState(false);
+  const [deleteAllError, setDeleteAllError] = useState<string | null>(null);
 
   const filteredTransactions = useMemo(() => {
     let filtered = [...transactions];
@@ -94,6 +98,21 @@ export function TransactionHistory({
     return filtered;
   }, [transactions, period, customStart, customEnd, searchQuery]);
 
+  // Compute stats from filtered transactions (so stats match the current period view)
+  const filteredStats = useMemo(() => {
+    const totalRevenue = filteredTransactions.reduce(
+      (sum, t) => sum + getActualRevenue(t),
+      0
+    );
+    const totalCount = filteredTransactions.length;
+    const averageTransaction = totalCount > 0 ? totalRevenue / totalCount : 0;
+    const totalItems = filteredTransactions.reduce(
+      (sum, t) => sum + t.items.reduce((s, i) => s + roundItemQty(i.quantity), 0),
+      0
+    );
+    return { totalRevenue, totalCount, averageTransaction, totalItems };
+  }, [filteredTransactions]);
+
   const periodLabelMap: Record<PeriodFilter, string> = {
     today: 'hari-ini',
     week: '7hari',
@@ -110,7 +129,32 @@ export function TransactionHistory({
     }).format(amount);
   };
 
-  // if (!isOpen) return null; // Component is now controlled by parent routing
+  const handleDeleteAllClick = () => {
+    setShowDeleteAllModal(true);
+    setDeleteConfirmText('');
+    setDeleteAllError(null);
+  };
+
+  const handleDeleteAllConfirm = async () => {
+    if (deleteConfirmText !== 'CONFIRM_DELETE') return;
+    setDeletingAll(true);
+    setDeleteAllError(null);
+    const result = await onDeleteAll();
+    if (!result.success) {
+      setDeleteAllError(result.error || 'Gagal menghapus data');
+      setDeletingAll(false);
+    } else {
+      setDeletingAll(false);
+      setShowDeleteAllModal(false);
+      setDeleteConfirmText('');
+    }
+  };
+
+  const handleDeleteAllCancel = () => {
+    setShowDeleteAllModal(false);
+    setDeleteConfirmText('');
+    setDeleteAllError(null);
+  };
 
   return (
     <div className="flex-1 flex flex-col h-full bg-gray-50 overflow-hidden">
@@ -132,22 +176,22 @@ export function TransactionHistory({
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
             <div className="text-sm text-gray-500 mb-1">Total Pendapatan</div>
             <div className="text-xl font-bold text-green-600">
-              {formatCurrency(stats.totalRevenue)}
+              {formatCurrency(filteredStats.totalRevenue)}
             </div>
           </div>
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
             <div className="text-sm text-gray-500 mb-1">Total Transaksi</div>
-            <div className="text-xl font-bold text-primary-900">{stats.totalCount}</div>
+            <div className="text-xl font-bold text-primary-900">{filteredStats.totalCount}</div>
           </div>
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
             <div className="text-sm text-gray-500 mb-1">Rata-rata</div>
             <div className="text-xl font-bold text-primary-900">
-              {formatCurrency(stats.averageTransaction)}
+              {formatCurrency(filteredStats.averageTransaction)}
             </div>
           </div>
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
             <div className="text-sm text-gray-500 mb-1">Item Terjual</div>
-            <div className="text-xl font-bold text-primary-900">{stats.totalItems}</div>
+            <div className="text-xl font-bold text-primary-900">{filteredStats.totalItems}</div>
           </div>
         </div>
 
@@ -196,7 +240,7 @@ export function TransactionHistory({
             )}
 
             <button
-              onClick={onClearAll}
+              onClick={handleDeleteAllClick}
               className="ml-auto px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium"
             >
               Hapus Semua Data
@@ -204,7 +248,12 @@ export function TransactionHistory({
           </div>
 
           <div className="flex-1 overflow-auto p-0">
-            {filteredTransactions.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center h-full text-gray-500 text-center p-8">
+                <div className="text-4xl mb-3 animate-spin">⏳</div>
+                <p>Memuat transaksi...</p>
+              </div>
+            ) : filteredTransactions.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-gray-500 text-center p-8">
                 <div className="text-4xl mb-3">📋</div>
                 <p>Tidak ada transaksi ditemukan</p>
@@ -224,6 +273,7 @@ export function TransactionHistory({
                   {filteredTransactions.map((transaction) => {
                     const date = new Date(transaction.timestamp);
                     const status = transaction.status ?? 'Lunas';
+                    const isPending = (transaction as TransactionWithPending)._pendingSync === true;
                     return (
                       <tr
                         key={transaction.id}
@@ -231,7 +281,14 @@ export function TransactionHistory({
                         className="hover:bg-primary-50 cursor-pointer transition-colors group"
                       >
                         <td className="px-6 py-4 font-medium text-gray-900 group-hover:text-primary-700">
-                          {transaction.id}
+                          <div className="flex items-center gap-2">
+                            {transaction.id}
+                            {isPending && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-yellow-100 text-yellow-700 border border-yellow-200 whitespace-nowrap">
+                                Belum Tersinkron
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-gray-600">
                           {format(date, 'dd MMM yyyy, HH:mm', { locale: id })}
@@ -260,6 +317,59 @@ export function TransactionHistory({
           </div>
         </div>
       </div>
+
+      {/* CONFIRM_DELETE Modal */}
+      {showDeleteAllModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 bg-red-50">
+              <h3 className="text-lg font-bold text-red-800 flex items-center gap-2">
+                ⚠️ Hapus Semua Data
+              </h3>
+            </div>
+            <div className="p-6">
+              <p className="text-sm text-gray-700 mb-4 leading-relaxed">
+                Tindakan ini akan menghapus <strong>SEMUA</strong> data transaksi secara permanen.
+                Ketik <code className="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-mono text-xs font-bold">CONFIRM_DELETE</code> untuk melanjutkan.
+              </p>
+              <input
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="Ketik CONFIRM_DELETE"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 font-mono text-sm"
+                autoFocus
+              />
+              {deleteConfirmText.length > 0 && deleteConfirmText !== 'CONFIRM_DELETE' && (
+                <p className="text-xs text-gray-400 mt-2">
+                  Ketik <span className="font-mono font-bold">CONFIRM_DELETE</span> untuk mengaktifkan tombol.
+                </p>
+              )}
+              {deleteAllError && (
+                <p className="text-sm text-red-600 mt-3 bg-red-50 rounded px-3 py-2">
+                  ❌ {deleteAllError}
+                </p>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex gap-3">
+              <button
+                onClick={handleDeleteAllConfirm}
+                disabled={deleteConfirmText !== 'CONFIRM_DELETE' || deletingAll}
+                className="flex-1 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {deletingAll ? 'Menghapus...' : 'Konfirmasi Hapus'}
+              </button>
+              <button
+                onClick={handleDeleteAllCancel}
+                disabled={deletingAll}
+                className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium text-sm transition-colors"
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

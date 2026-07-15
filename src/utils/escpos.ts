@@ -171,6 +171,7 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
     textToBytes(createLine("-")),
     BOLD_ON,
     textToBytes(createLine("=")),
+    FEED_LINE,
     DOUBLE_HEIGHT_ON,
     textToBytes(formatTotalLine("TOTAL:", formatPrice(total))),
     NORMAL_SIZE,
@@ -180,8 +181,10 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
   if (data.uangDibayar !== undefined) {
     const isHutang = (data.hutang ?? 0) > 0;
     parts.push(
+      FEED_LINE,
       BOLD_ON,
       textToBytes(formatTotalLine("BAYAR:", formatPrice(data.uangDibayar))),
+      FEED_LINE,
       textToBytes(formatTotalLine(
         isHutang ? "HUTANG:" : "KEMBALIAN:",
         formatPrice(isHutang ? (data.hutang ?? 0) : (data.kembalian ?? 0))

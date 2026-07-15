@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { PaymentModal } from "./components/PaymentModal";
 import { Header } from "./components/Header";
 import { ItemGridWithSearch } from "./components/ItemGrid";
@@ -32,7 +32,21 @@ function App() {
 
   const cart = useCart();
   const { items, updateItem, deleteItem, addItem, loading: itemsLoading, error: itemsError } = useItems();
-  const { transactions, addTransaction, updateTransaction, stats, clearAll } = useTransactions();
+  const {
+    transactions,
+    addTransaction,
+    updateTransaction,
+    deleteTransaction,
+    deleteAll,
+    loading: transactionsLoading,
+  } = useTransactions();
+
+  // Toast state for sync / error feedback
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const showToast = useCallback((msg: string, durationMs = 3000) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), durationMs);
+  }, []);
 
   // Legacy edit states removed
 
@@ -59,7 +73,7 @@ function App() {
     setShowPaymentModal(true);
   };
 
-  const handlePaymentConfirm = (uangDibayar: number, kembalian: number, hutang: number) => {
+  const handlePaymentConfirm = async (uangDibayar: number, kembalian: number, hutang: number) => {
     setShowPaymentModal(false);
 
     const isReprint = !!cart.reprintTransactionId;
@@ -78,11 +92,21 @@ function App() {
       hutang,
     };
 
+    // Fire-and-forget: Supabase insert/update with offline fallback.
+    // Receipt printing + cart clearing happen regardless of sync success.
     if (isReprint) {
-      updateTransaction(transaction);
+      updateTransaction(transaction).then((res) => {
+        if (!res.success) {
+          showToast('⚠️ Transaksi disimpan lokal, akan disinkron otomatis');
+        }
+      });
       cart.clearReprintId();
     } else {
-      addTransaction(transaction);
+      addTransaction(transaction).then((res) => {
+        if (!res.success) {
+          showToast('⚠️ Transaksi disimpan lokal, akan disinkron otomatis');
+        }
+      });
     }
 
     const receiptData = {
@@ -173,7 +197,7 @@ function App() {
                 display: flex;
                 justify-content: space-between;
                 align-items: baseline;
-                padding: 1px 0;
+                padding: 2px 0;
                 font-weight: bold;
                 font-size: 14px;
               }
@@ -186,7 +210,7 @@ function App() {
                 display: flex;
                 justify-content: space-between;
                 align-items: baseline;
-                padding: 0;
+                padding: 1px 0;
                 font-size: 12px;
               }
               .payment-label { }
@@ -199,7 +223,7 @@ function App() {
                 font-size: 11px;
               }
               .bottom-section {
-                line-height: 1.1;
+                line-height: 1.25;
               }
               .bottom-section .separator {
                 line-height: 0.8;
@@ -282,7 +306,7 @@ function App() {
           <TransactionHistory
             transactions={transactions}
             onSelectTransaction={setSelectedTransaction}
-            stats={stats}
+            loading={transactionsLoading}
             onExportJSON={(filteredTransactions, periodLabel) => {
               const priceTypeLabel = (pt: string) => {
                 switch (pt) {
@@ -330,7 +354,15 @@ function App() {
               a.click();
               URL.revokeObjectURL(url);
             }}
-            onClearAll={clearAll}
+            onDeleteAll={async () => {
+              const result = await deleteAll();
+              if (result.success) {
+                showToast('✅ Semua data transaksi berhasil dihapus');
+              } else {
+                showToast('❌ Gagal menghapus: ' + (result.error || 'Unknown error'));
+              }
+              return result;
+            }}
           />
         );
       case 'data':
@@ -397,7 +429,22 @@ function App() {
           transaction={selectedTransaction}
           onClose={() => setSelectedTransaction(null)}
           onCetakUlang={handleCetakUlang}
+          onDelete={async (id: string) => {
+            const result = await deleteTransaction(id);
+            if (result.success) {
+              setSelectedTransaction(null);
+              showToast('✅ Transaksi berhasil dihapus');
+            }
+            return result;
+          }}
         />
+      )}
+
+      {/* Sync/Error Toast */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl text-sm font-medium animate-fade-in max-w-md text-center">
+          {toastMessage}
+        </div>
       )}
     </div>
   );

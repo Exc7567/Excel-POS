@@ -1,128 +1,194 @@
-import { useState, useCallback, useMemo } from 'react';
-import type { Transaction, TransactionFilter } from '../types/transaction';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import type { Transaction } from '../types/transaction';
 import { getActualRevenue } from '../utils/revenueHelper';
 import { roundItemQty } from '../utils/roundItemQty';
+import {
+  fetchTransactions as fetchFromSupabase,
+  insertTransaction as insertIntoSupabase,
+  updateTransactionInDb,
+  deleteTransactionFromDb,
+  deleteAllTransactions as deleteAllFromSupabase,
+  addToPendingQueue,
+  getPendingTransactions,
+  clearPendingQueue,
+  startSyncInterval,
+  stopSyncInterval,
+} from '../services/transactionService';
 
-const TRANSACTIONS_KEY = 'pos_transactions';
-
-function loadTransactions(): Transaction[] {
-  try {
-    const stored = localStorage.getItem(TRANSACTIONS_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      return parsed.map((t: Transaction) => ({
-        ...t,
-        timestamp: new Date(t.timestamp),
-      }));
-    }
-  } catch (error) {
-    console.error('Failed to load transactions:', error);
-  }
-  return [];
-}
-
-function saveTransactions(transactions: Transaction[]): void {
-  try {
-    localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions));
-  } catch (error) {
-    console.error('Failed to save transactions:', error);
-  }
+export interface TransactionWithPending extends Transaction {
+  _pendingSync?: boolean;
 }
 
 export function useTransactions() {
-  const [transactions, setTransactions] = useState<Transaction[]>(() =>
-    loadTransactions()
-  );
+  const [transactions, setTransactions] = useState<TransactionWithPending[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const mountedRef = useRef(true);
 
-  const addTransaction = useCallback((transaction: Transaction) => {
-    setTransactions((prev) => {
-      const updated = [transaction, ...prev];
-      saveTransactions(updated);
-      return updated;
-    });
-  }, []);
+  // ── Load from Supabase on mount, merge pending ──────────────────────────
+  const refreshTransactions = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-  const updateTransaction = useCallback((transaction: Transaction) => {
-    setTransactions((prev) => {
-      const updated = prev.map((t) =>
-        t.id === transaction.id ? { ...transaction } : t
+    const { data, error: fetchError } = await fetchFromSupabase();
+
+    if (!mountedRef.current) return;
+
+    if (fetchError) {
+      setError(fetchError);
+      // Even on error, show any pending transactions so no sale is invisible
+      const pending = getPendingTransactions();
+      const pendingTxns: TransactionWithPending[] = pending.map((p) => ({
+        ...p.transaction,
+        timestamp: new Date(p.transaction.timestamp),
+        _pendingSync: true,
+      }));
+      setTransactions(pendingTxns);
+    } else {
+      // Merge: Supabase data + any pending items not yet in Supabase
+      const pending = getPendingTransactions();
+      const supabaseIds = new Set(data.map((t) => t.id));
+      const pendingTxns: TransactionWithPending[] = pending
+        .filter((p) => !supabaseIds.has(p.transaction.id))
+        .map((p) => ({
+          ...p.transaction,
+          timestamp: new Date(p.transaction.timestamp),
+          _pendingSync: true,
+        }));
+
+      const merged: TransactionWithPending[] = [
+        ...pendingTxns,
+        ...data.map((t) => ({ ...t, _pendingSync: false })),
+      ];
+
+      // Sort by timestamp descending (newest first)
+      merged.sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
-      saveTransactions(updated);
-      return updated;
-    });
+
+      setTransactions(merged);
+    }
+
+    setLoading(false);
   }, []);
 
-  const getTransaction = useCallback(
-    (id: string): Transaction | undefined => {
-      return transactions.find((t) => t.id === id);
+  // ── Mount/unmount ───────────────────────────────────────────────────────
+  useEffect(() => {
+    mountedRef.current = true;
+    refreshTransactions();
+
+    // Start background sync — on successful sync, refresh the list
+    startSyncInterval((syncedCount) => {
+      if (syncedCount > 0 && mountedRef.current) {
+        refreshTransactions();
+      }
+    });
+
+    return () => {
+      mountedRef.current = false;
+      stopSyncInterval();
+    };
+  }, [refreshTransactions]);
+
+  // ── Add Transaction (checkout) ──────────────────────────────────────────
+  const addTransaction = useCallback(
+    async (transaction: Transaction): Promise<{ success: boolean }> => {
+      // Optimistically add to state immediately
+      const txnWithPending: TransactionWithPending = { ...transaction, _pendingSync: true };
+      setTransactions((prev) => [txnWithPending, ...prev]);
+
+      // Attempt Supabase insert
+      const result = await insertIntoSupabase(transaction);
+
+      if (result.success) {
+        // Mark as synced in state
+        setTransactions((prev) =>
+          prev.map((t) =>
+            t.id === transaction.id ? { ...t, _pendingSync: false } : t
+          )
+        );
+      } else {
+        // Save to offline queue — the item stays in UI with pending badge
+        addToPendingQueue('insert', transaction);
+      }
+
+      return { success: result.success };
     },
-    [transactions]
+    []
   );
 
-  const filterTransactions = useCallback(
-    (filter: TransactionFilter): Transaction[] => {
-      return transactions.filter((t) => {
-        const timestamp = new Date(t.timestamp);
+  // ── Update Transaction (Cetak Ulang) ────────────────────────────────────
+  const updateTransaction = useCallback(
+    async (transaction: Transaction): Promise<{ success: boolean }> => {
+      // Optimistically update in state
+      setTransactions((prev) =>
+        prev.map((t) =>
+          t.id === transaction.id
+            ? { ...transaction, _pendingSync: true }
+            : t
+        )
+      );
 
-        if (filter.startDate && timestamp < filter.startDate) return false;
-        if (filter.endDate && timestamp > filter.endDate) return false;
+      // Attempt Supabase update
+      const result = await updateTransactionInDb(transaction);
 
-        if (filter.searchQuery) {
-          const query = filter.searchQuery.toLowerCase();
-          const dateStr = timestamp.toLocaleDateString('id-ID').toLowerCase();
-          const timeStr = timestamp.toLocaleTimeString('id-ID').toLowerCase();
-          const itemNames = t.items.map((i) => i.name.toLowerCase()).join(' ');
-          const totalStr = t.total.toString();
+      if (result.success) {
+        setTransactions((prev) =>
+          prev.map((t) =>
+            t.id === transaction.id ? { ...t, _pendingSync: false } : t
+          )
+        );
+      } else {
+        addToPendingQueue('update', transaction);
+      }
 
-          return (
-            t.id.toLowerCase().includes(query) ||
-            dateStr.includes(query) ||
-            timeStr.includes(query) ||
-            itemNames.includes(query) ||
-            totalStr.includes(query)
-          );
-        }
-
-        return true;
-      });
+      return { success: result.success };
     },
-    [transactions]
+    []
   );
 
-  const getTodayTransactions = useCallback((): Transaction[] => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+  // ── Delete Single Transaction ───────────────────────────────────────────
+  const deleteTransaction = useCallback(
+    async (id: string): Promise<{ success: boolean; error?: string }> => {
+      const result = await deleteTransactionFromDb(id);
 
-    return transactions.filter(
-      (t) => new Date(t.timestamp) >= today && new Date(t.timestamp) < tomorrow
-    );
-  }, [transactions]);
+      if (result.success) {
+        setTransactions((prev) => prev.filter((t) => t.id !== id));
+        return { success: true };
+      } else {
+        return { success: false, error: result.error || 'Gagal menghapus transaksi' };
+      }
+    },
+    []
+  );
 
-  const getWeekTransactions = useCallback((): Transaction[] => {
-    const now = new Date();
-    const weekAgo = new Date(now);
-    weekAgo.setDate(weekAgo.getDate() - 7);
+  // ── Delete All Transactions ─────────────────────────────────────────────
+  const deleteAll = useCallback(
+    async (): Promise<{ success: boolean; error?: string }> => {
+      const result = await deleteAllFromSupabase();
 
-    return transactions.filter((t) => new Date(t.timestamp) >= weekAgo);
-  }, [transactions]);
+      if (result.success) {
+        clearPendingQueue();
+        setTransactions([]);
+        return { success: true };
+      } else {
+        return { success: false, error: result.error || 'Gagal menghapus semua data' };
+      }
+    },
+    []
+  );
 
-  const getMonthTransactions = useCallback((): Transaction[] => {
-    const now = new Date();
-    const monthAgo = new Date(now);
-    monthAgo.setDate(monthAgo.getDate() - 30);
-
-    return transactions.filter((t) => new Date(t.timestamp) >= monthAgo);
-  }, [transactions]);
-
+  // ── Stats (computed from current in-memory list) ────────────────────────
   const stats = useMemo(() => {
-    const totalRevenue = transactions.reduce((sum, t) => sum + getActualRevenue(t), 0);
+    const totalRevenue = transactions.reduce(
+      (sum, t) => sum + getActualRevenue(t),
+      0
+    );
     const totalCount = transactions.length;
-    const averageTransaction =
-      totalCount > 0 ? totalRevenue / totalCount : 0;
+    const averageTransaction = totalCount > 0 ? totalRevenue / totalCount : 0;
     const totalItems = transactions.reduce(
-      (sum, t) => sum + t.items.reduce((s, i) => s + roundItemQty(i.quantity), 0),
+      (sum, t) =>
+        sum + t.items.reduce((s, i) => s + roundItemQty(i.quantity), 0),
       0
     );
 
@@ -134,24 +200,15 @@ export function useTransactions() {
     };
   }, [transactions]);
 
-
-  const clearAll = useCallback(() => {
-    if (confirm('Yakin ingin menghapus semua riwayat transaksi?')) {
-      setTransactions([]);
-      saveTransactions([]);
-    }
-  }, []);
-
   return {
     transactions,
+    loading,
+    error,
     addTransaction,
     updateTransaction,
-    getTransaction,
-    filterTransactions,
-    getTodayTransactions,
-    getWeekTransactions,
-    getMonthTransactions,
+    deleteTransaction,
+    deleteAll,
+    refreshTransactions,
     stats,
-    clearAll,
   };
 }

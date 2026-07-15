@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import type { Transaction } from '../types/transaction';
@@ -6,9 +7,14 @@ interface TransactionDetailProps {
   transaction: Transaction;
   onClose: () => void;
   onCetakUlang: (transaction: Transaction) => void;
+  onDelete: (id: string) => Promise<{ success: boolean; error?: string }>;
 }
 
-export function TransactionDetail({ transaction, onClose, onCetakUlang }: TransactionDetailProps) {
+export function TransactionDetail({ transaction, onClose, onCetakUlang, onDelete }: TransactionDetailProps) {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -19,11 +25,42 @@ export function TransactionDetail({ transaction, onClose, onCetakUlang }: Transa
 
   const date = new Date(transaction.timestamp);
 
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+    setDeleteError(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setDeleting(true);
+    setDeleteError(null);
+    const result = await onDelete(transaction.id);
+    if (!result.success) {
+      setDeleteError(result.error || 'Gagal menghapus transaksi. Periksa koneksi internet.');
+      setDeleting(false);
+    }
+    // If success, parent will close this modal
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+    setDeleteError(null);
+  };
+
+  // Detect pending sync status
+  const isPending = (transaction as any)._pendingSync === true;
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold">Detail Transaksi</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold">Detail Transaksi</h2>
+            {isPending && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-yellow-100 text-yellow-700 border border-yellow-200">
+                Belum Tersinkron
+              </span>
+            )}
+          </div>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-xl"
@@ -126,12 +163,52 @@ export function TransactionDetail({ transaction, onClose, onCetakUlang }: Transa
           </div>
         </div>
 
+        {/* Delete Confirmation Inline */}
+        {showDeleteConfirm && (
+          <div className="px-6 pb-4">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-800 font-medium mb-3">
+                Hapus transaksi ini? Tindakan ini tidak bisa dibatalkan.
+              </p>
+              {deleteError && (
+                <p className="text-sm text-red-600 mb-3 bg-red-100 rounded px-3 py-2">
+                  ❌ {deleteError}
+                </p>
+              )}
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDeleteConfirm}
+                  disabled={deleting}
+                  className="flex-1 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {deleting ? 'Menghapus...' : 'Hapus'}
+                </button>
+                <button
+                  onClick={handleDeleteCancel}
+                  disabled={deleting}
+                  className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium text-sm disabled:opacity-50 transition-colors"
+                >
+                  Batal
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="px-6 py-4 border-t border-gray-200 flex gap-3">
           <button
             onClick={() => onCetakUlang(transaction)}
             className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
           >
             Cetak Ulang
+          </button>
+          <button
+            onClick={handleDeleteClick}
+            disabled={showDeleteConfirm}
+            className="py-2 px-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
+            title="Hapus transaksi"
+          >
+            🗑️
           </button>
           <button
             onClick={onClose}
