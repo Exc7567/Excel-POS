@@ -3,13 +3,14 @@ import { formatCurrency } from '../utils/formatCurrency';
 
 interface PaymentModalProps {
   total: number;
-  onConfirm: (uangDibayar: number, kembalian: number, hutang: number) => void;
+  onConfirm: (uangDibayar: number, kembalian: number, hutang: number, namaPelanggan: string | null) => void;
   onCancel: () => void;
 }
 
 export function PaymentModal({ total, onConfirm, onCancel }: PaymentModalProps) {
   const [inputValue, setInputValue] = useState<string>('');
   const [showHutangConfirm, setShowHutangConfirm] = useState(false);
+  const [namaPelanggan, setNamaPelanggan] = useState<string>('');
 
   // Treat empty or invalid input as 0
   const parsed = inputValue === '' ? 0 : parseInt(inputValue, 10);
@@ -28,7 +29,7 @@ export function PaymentModal({ total, onConfirm, onCancel }: PaymentModalProps) 
   const handleConfirm = () => {
     if (isEnough) {
       // Fully paid — print immediately, no confirmation needed
-      onConfirm(uangDibayar, kembalian, 0);
+      onConfirm(uangDibayar, kembalian, 0, null);
     } else {
       // Underpayment — show hutang confirmation dialog
       setShowHutangConfirm(true);
@@ -38,7 +39,14 @@ export function PaymentModal({ total, onConfirm, onCancel }: PaymentModalProps) 
   const handleHutangConfirm = () => {
     // User confirmed hutang — proceed to print
     setShowHutangConfirm(false);
-    onConfirm(uangDibayar, 0, hutang);
+    const trimmedName = namaPelanggan.trim();
+    onConfirm(uangDibayar, 0, hutang, trimmedName || null);
+  };
+
+  const handleHutangSkipName = () => {
+    // User skipped name entry — proceed with null
+    setShowHutangConfirm(false);
+    onConfirm(uangDibayar, 0, hutang, null);
   };
 
   const handleHutangCancel = () => {
@@ -147,14 +155,37 @@ export function PaymentModal({ total, onConfirm, onCancel }: PaymentModalProps) 
                 <span>⚠️</span> Konfirmasi Hutang
               </h3>
             </div>
-            <div className="px-6 py-5 text-center">
-              <p className="text-gray-700 text-base mb-2">
-                Pelanggan berhutang
-              </p>
-              <p className="text-2xl font-bold text-orange-600 mb-3">
-                {formatCurrency(hutang)}
-              </p>
-              <p className="text-sm text-gray-500">
+            <div className="px-6 py-5">
+              <div className="text-center mb-4">
+                <p className="text-gray-700 text-base mb-2">
+                  Pelanggan berhutang
+                </p>
+                <p className="text-2xl font-bold text-orange-600 mb-3">
+                  {formatCurrency(hutang)}
+                </p>
+              </div>
+
+              {/* Customer Name Input (optional) */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Nama Pelanggan (opsional)
+                </label>
+                <input
+                  type="text"
+                  value={namaPelanggan}
+                  onChange={(e) => setNamaPelanggan(e.target.value)}
+                  placeholder="Masukkan nama pelanggan..."
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleHutangConfirm();
+                    }
+                  }}
+                  autoFocus
+                />
+              </div>
+
+              <p className="text-sm text-gray-500 text-center">
                 Lanjutkan cetak?
               </p>
             </div>
@@ -164,6 +195,12 @@ export function PaymentModal({ total, onConfirm, onCancel }: PaymentModalProps) 
                 className="flex-1 py-3 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-all"
               >
                 Batal
+              </button>
+              <button
+                onClick={handleHutangSkipName}
+                className="py-3 px-4 text-orange-600 bg-orange-50 hover:bg-orange-100 rounded-xl font-medium transition-all text-sm border border-orange-200"
+              >
+                Lewati
               </button>
               <button
                 onClick={handleHutangConfirm}

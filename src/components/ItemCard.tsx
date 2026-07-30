@@ -19,7 +19,7 @@ export function ItemCard({ item, priceType, onAdd }: ItemCardProps) {
       `}
       onClick={() => isAvailable && onAdd(item)}
     >
-      <div className="font-medium text-gray-900 truncate text-xs sm:text-sm">
+      <div className="font-bold text-gray-900 truncate text-xs sm:text-sm">
         {item.name}
       </div>
       <div className="text-[10px] sm:text-xs text-gray-500 mt-1">{item.category}</div>

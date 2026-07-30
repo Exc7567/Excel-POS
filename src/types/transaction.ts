@@ -12,6 +12,7 @@ export interface Transaction {
   kembalian?: number;
   status?: 'Lunas' | 'Belum Lunas';
   hutang?: number;
+  nama_pelanggan?: string | null;
 }
 
 export interface TransactionSummary {

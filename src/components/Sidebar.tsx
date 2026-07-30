@@ -78,7 +78,7 @@ export function Sidebar({
           <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-white">
             {isExpanded && (
               <div className="overflow-hidden">
-                <h1 className="font-bold text-primary-900 text-base sm:text-lg leading-tight truncate">
+                <h1 className="font-bold text-primary-900 text-base sm:text-lg leading-tight truncate" style={{ fontFamily: 'var(--font-display)' }}>
                   Sumber Kasih POS
                 </h1>
               </div>

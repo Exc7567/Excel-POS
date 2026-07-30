@@ -26,6 +26,7 @@ export interface SupabaseTransactionRow {
   kembalian: number;
   hutang: number;
   status: string;
+  nama_pelanggan?: string | null;
   created_at?: string;
 }
 
@@ -80,6 +81,7 @@ export function mapToSupabaseRow(t: Transaction): Omit<SupabaseTransactionRow, '
     kembalian: t.kembalian ?? 0,
     hutang: t.hutang ?? 0,
     status: t.status ?? 'Lunas',
+    nama_pelanggan: t.nama_pelanggan || null,
   };
 }
 
@@ -120,6 +122,7 @@ export function mapFromSupabaseRow(row: SupabaseTransactionRow): Transaction {
     kembalian: row.kembalian,
     status: (row.status as 'Lunas' | 'Belum Lunas') || 'Lunas',
     hutang: row.hutang,
+    nama_pelanggan: row.nama_pelanggan || null,
   };
 }
 

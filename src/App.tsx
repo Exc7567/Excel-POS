@@ -73,7 +73,7 @@ function App() {
     setShowPaymentModal(true);
   };
 
-  const handlePaymentConfirm = async (uangDibayar: number, kembalian: number, hutang: number) => {
+  const handlePaymentConfirm = async (uangDibayar: number, kembalian: number, hutang: number, namaPelanggan: string | null) => {
     setShowPaymentModal(false);
 
     const isReprint = !!cart.reprintTransactionId;
@@ -90,6 +90,7 @@ function App() {
       kembalian,
       status,
       hutang,
+      nama_pelanggan: namaPelanggan,
     };
 
     // Fire-and-forget: Supabase insert/update with offline fallback.
@@ -117,6 +118,7 @@ function App() {
       uangDibayar,
       kembalian,
       hutang,
+      namaPelanggan: namaPelanggan,
     };
 
     const receiptHTML = generateReceiptHTML(receiptData);

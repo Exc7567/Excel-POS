@@ -71,8 +71,8 @@ export function ReportsModal({ transactions }: ReportsModalProps) {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-            <div className="text-sm text-gray-500 font-medium mb-1">Total Pendapatan</div>
-            <div className="text-2xl font-bold text-primary-700">
+            <div className="text-sm text-gray-500 font-medium mb-1" style={{ fontFamily: 'var(--font-display)' }}>Total Pendapatan</div>
+            <div className="text-2xl font-bold text-primary-700" style={{ fontFamily: 'var(--font-display)' }}>
               {formatCurrency(report.totalRevenue)}
             </div>
             {report.revenueChangePercent !== undefined && (
@@ -83,24 +83,24 @@ export function ReportsModal({ transactions }: ReportsModalProps) {
           </div>
 
           <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-            <div className="text-sm text-green-600 font-medium mb-1">Transaksi Berhasil</div>
-            <div className="text-2xl font-bold text-green-700">
+            <div className="text-sm text-green-600 font-medium mb-1" style={{ fontFamily: 'var(--font-display)' }}>Transaksi Berhasil</div>
+            <div className="text-2xl font-bold text-green-700" style={{ fontFamily: 'var(--font-display)' }}>
               {report.totalTransactions}
             </div>
             <div className="text-xs text-gray-400 mt-2">transaksi</div>
           </div>
 
           <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-            <div className="text-sm text-purple-600 font-medium mb-1">Rata-rata Transaksi</div>
-            <div className="text-2xl font-bold text-purple-700">
+            <div className="text-sm text-purple-600 font-medium mb-1" style={{ fontFamily: 'var(--font-display)' }}>Rata-rata Transaksi</div>
+            <div className="text-2xl font-bold text-purple-700" style={{ fontFamily: 'var(--font-display)' }}>
               {formatCurrency(report.averageTransaction)}
             </div>
             <div className="text-xs text-gray-400 mt-2">per struk</div>
           </div>
 
           <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-            <div className="text-sm text-orange-600 font-medium mb-1">Total Item Terjual</div>
-            <div className="text-2xl font-bold text-orange-700">
+            <div className="text-sm text-orange-600 font-medium mb-1" style={{ fontFamily: 'var(--font-display)' }}>Total Item Terjual</div>
+            <div className="text-2xl font-bold text-orange-700" style={{ fontFamily: 'var(--font-display)' }}>
               {report.totalItemsSold}
             </div>
             <div className="text-xs text-gray-400 mt-2">item</div>
@@ -164,7 +164,7 @@ export function ReportsModal({ transactions }: ReportsModalProps) {
                         <td className="p-3 text-gray-500 pl-4">{idx + 1}</td>
                         <td className="p-3">
                           <div className="font-medium text-gray-900">{item.name}</div>
-                          <div className="text-xs text-gray-500">{item.category}</div>
+                          <div className="text-xs text-gray-500 italic">{item.category}</div>
                         </td>
                         <td className="p-3 text-center font-medium bg-gray-50 rounded">{item.quantity}</td>
                         <td className="p-3 text-right font-medium text-primary-700 pr-4">

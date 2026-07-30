@@ -108,6 +108,7 @@ export interface ReceiptData {
   uangDibayar?: number;
   kembalian?: number;
   hutang?: number;
+  namaPelanggan?: string | null;
 }
 
 export function generateReceipt(data: ReceiptData): Uint8Array {
@@ -143,6 +144,16 @@ export function generateReceipt(data: ReceiptData): Uint8Array {
     BOLD_OFF,
     ALIGN_LEFT,
     textToBytes(`Tanggal: ${dateStr}  Jam: ${timeStr}\n`),
+  );
+
+  // Customer name line (only for Belum Lunas with a name)
+  if (data.namaPelanggan) {
+    parts.push(
+      textToBytes(`Pelanggan: ${data.namaPelanggan}\n`),
+    );
+  }
+
+  parts.push(
     FEED_LINE,
     textToBytes(createLine("-")),
   );
@@ -237,6 +248,9 @@ export function generateReceiptText(data: ReceiptData): string {
   }
   text += createLine("=");
   text += `Tanggal: ${dateStr}  Jam: ${timeStr}\n`;
+  if (data.namaPelanggan) {
+    text += `Pelanggan: ${data.namaPelanggan}\n`;
+  }
   text += "\n";
   text += createLine("-");
 
@@ -294,6 +308,10 @@ export function generateReceiptHTML(data: ReceiptData): string {
 
   // Date/time
   html += `<div class="date-line">Tanggal: ${dateStr} &nbsp; Jam: ${timeStr}</div>`;
+  // Customer name (only for Belum Lunas with a name)
+  if (data.namaPelanggan) {
+    html += `<div class="date-line">Pelanggan: ${data.namaPelanggan}</div>`;
+  }
   html += sep("-");
 
   // Items

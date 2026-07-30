@@ -88,6 +88,16 @@ export function TransactionDetail({ transaction, onClose, onCetakUlang, onDelete
             <div className="font-medium capitalize">{transaction.priceType}</div>
           </div>
 
+          {/* Nama Pelanggan (shown for Belum Lunas with a name) */}
+          {(transaction.status ?? 'Lunas') === 'Belum Lunas' && (
+            <div className="mb-4">
+              <div className="text-sm text-gray-500">Nama Pelanggan</div>
+              <div className="font-medium">
+                {transaction.nama_pelanggan || '-'}
+              </div>
+            </div>
+          )}
+
           <div className="border-t border-b border-gray-200 py-4 my-4">
             <table className="w-full text-sm">
               <thead>

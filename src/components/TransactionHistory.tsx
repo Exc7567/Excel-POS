@@ -27,6 +27,7 @@ export function TransactionHistory({
   const [period, setPeriod] = useState<PeriodFilter>('today');
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState('');
+  const [showBelumLunasOnly, setShowBelumLunasOnly] = useState(false);
 
   // CONFIRM_DELETE modal state
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
@@ -75,6 +76,11 @@ export function TransactionHistory({
       filtered = filtered.filter((t) => new Date(t.timestamp) <= endDate!);
     }
 
+    // Belum Lunas filter
+    if (showBelumLunasOnly) {
+      filtered = filtered.filter((t) => (t.status ?? 'Lunas') === 'Belum Lunas');
+    }
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((t) => {
@@ -84,19 +90,21 @@ export function TransactionHistory({
         const timeStr = format(new Date(t.timestamp), 'HH:mm:ss').toLowerCase();
         const itemNames = t.items.map((i) => i.name.toLowerCase()).join(' ');
         const totalStr = t.total.toString();
+        const customerName = (t.nama_pelanggan ?? '').toLowerCase();
 
         return (
           t.id.toLowerCase().includes(query) ||
           dateStr.includes(query) ||
           timeStr.includes(query) ||
           itemNames.includes(query) ||
-          totalStr.includes(query)
+          totalStr.includes(query) ||
+          customerName.includes(query)
         );
       });
     }
 
     return filtered;
-  }, [transactions, period, customStart, customEnd, searchQuery]);
+  }, [transactions, period, customStart, customEnd, searchQuery, showBelumLunasOnly]);
 
   // Compute stats from filtered transactions (so stats match the current period view)
   const filteredStats = useMemo(() => {
@@ -174,24 +182,24 @@ export function TransactionHistory({
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-shrink-0">
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-            <div className="text-sm text-gray-500 mb-1">Total Pendapatan</div>
-            <div className="text-xl font-bold text-green-600">
+            <div className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'var(--font-display)' }}>Total Pendapatan</div>
+            <div className="text-xl font-bold text-green-600" style={{ fontFamily: 'var(--font-display)' }}>
               {formatCurrency(filteredStats.totalRevenue)}
             </div>
           </div>
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-            <div className="text-sm text-gray-500 mb-1">Total Transaksi</div>
-            <div className="text-xl font-bold text-primary-900">{filteredStats.totalCount}</div>
+            <div className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'var(--font-display)' }}>Total Transaksi</div>
+            <div className="text-xl font-bold text-primary-900" style={{ fontFamily: 'var(--font-display)' }}>{filteredStats.totalCount}</div>
           </div>
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-            <div className="text-sm text-gray-500 mb-1">Rata-rata</div>
-            <div className="text-xl font-bold text-primary-900">
+            <div className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'var(--font-display)' }}>Rata-rata</div>
+            <div className="text-xl font-bold text-primary-900" style={{ fontFamily: 'var(--font-display)' }}>
               {formatCurrency(filteredStats.averageTransaction)}
             </div>
           </div>
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-            <div className="text-sm text-gray-500 mb-1">Item Terjual</div>
-            <div className="text-xl font-bold text-primary-900">{filteredStats.totalItems}</div>
+            <div className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'var(--font-display)' }}>Item Terjual</div>
+            <div className="text-xl font-bold text-primary-900" style={{ fontFamily: 'var(--font-display)' }}>{filteredStats.totalItems}</div>
           </div>
         </div>
 
@@ -202,7 +210,7 @@ export function TransactionHistory({
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
               <input
                 type="text"
-                placeholder="Cari transaksi..."
+                placeholder="Cari transaksi / nama pelanggan..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -220,6 +228,18 @@ export function TransactionHistory({
               <option value="custom">Custom</option>
               <option value="all">Semua</option>
             </select>
+
+            {/* Belum Lunas Toggle */}
+            <button
+              onClick={() => setShowBelumLunasOnly(!showBelumLunasOnly)}
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
+                showBelumLunasOnly
+                  ? 'bg-orange-100 text-orange-700 border-orange-300 shadow-sm'
+                  : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {showBelumLunasOnly ? '🔸 Belum Lunas' : '○ Belum Lunas'}
+            </button>
 
             {period === 'custom' && (
               <div className="flex items-center gap-2">
@@ -267,6 +287,7 @@ export function TransactionHistory({
                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Item</th>
                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-right">Total</th>
                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">Status</th>
+                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Nama Pelanggan</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -274,6 +295,10 @@ export function TransactionHistory({
                     const date = new Date(transaction.timestamp);
                     const status = transaction.status ?? 'Lunas';
                     const isPending = (transaction as TransactionWithPending)._pendingSync === true;
+                    // Display logic: Belum Lunas with name → show name; Belum Lunas without name → "-"; Lunas → "-"
+                    const displayName = status === 'Belum Lunas' && transaction.nama_pelanggan
+                      ? transaction.nama_pelanggan
+                      : '-';
                     return (
                       <tr
                         key={transaction.id}
@@ -307,6 +332,9 @@ export function TransactionHistory({
                           }`}>
                             {status}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 text-gray-600">
+                          {displayName}
                         </td>
                       </tr>
                     );
