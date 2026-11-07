@@ -50,9 +50,9 @@ export function TransactionDetail({ transaction, onClose, onCetakUlang, onDelete
   const isPending = (transaction as any)._pendingSync === true;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md max-h-full flex flex-col overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold">Detail Transaksi</h2>
             {isPending && (
@@ -69,7 +69,7 @@ export function TransactionDetail({ transaction, onClose, onCetakUlang, onDelete
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 flex-1 min-h-0 overflow-y-auto overscroll-contain">
           <div className="mb-4">
             <div className="text-sm text-gray-500">ID Transaksi</div>
             <div className="font-medium">{transaction.id}</div>
@@ -175,7 +175,7 @@ export function TransactionDetail({ transaction, onClose, onCetakUlang, onDelete
 
         {/* Delete Confirmation Inline */}
         {showDeleteConfirm && (
-          <div className="px-6 pb-4">
+          <div className="px-6 pt-4 pb-4 border-t border-gray-200 shrink-0">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-sm text-red-800 font-medium mb-3">
                 Hapus transaksi ini? Tindakan ini tidak bisa dibatalkan.
@@ -205,7 +205,7 @@ export function TransactionDetail({ transaction, onClose, onCetakUlang, onDelete
           </div>
         )}
 
-        <div className="px-6 py-4 border-t border-gray-200 flex gap-3">
+        <div className="px-6 py-4 border-t border-gray-200 flex gap-3 shrink-0">
           <button
             onClick={() => onCetakUlang(transaction)}
             className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
